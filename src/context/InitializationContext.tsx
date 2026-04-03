@@ -39,6 +39,14 @@ export function InitializationProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
     setError(null);
 
+    // Safety timeout - if initialization takes too long, force maintenance page
+    const safetyTimer = setTimeout(() => {
+      console.error('[Initialization] Safety timeout exceeded (10s). Forcing maintenance mode.');
+      setIsHealthy(false);
+      setIsInitialized(true);
+      setIsLoading(false);
+    }, 10000);
+
     try {
       // Step 1: Check health
       console.log('[Initialization] Step 1: Checking health...');
@@ -102,13 +110,14 @@ export function InitializationProvider({ children }: { children: ReactNode }) {
       }
 
       setIsInitialized(true);
-      console.log('[Initialization] Complete');
+      console.log('[Initialization] Complete - isHealthy=true');
     } catch (err: any) {
-      console.error('[Initialization] Failed:', err);
+      console.error('[Initialization] Failed - falling back to maintenance:', err.message);
       setError(err.message || 'Initialization failed');
       setIsHealthy(false);
-      setIsInitialized(true); // Mark as initialized so maintenance page can show
+      setIsInitialized(true);
     } finally {
+      clearTimeout(safetyTimer);
       setIsLoading(false);
     }
   };

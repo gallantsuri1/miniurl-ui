@@ -16,10 +16,12 @@ COPY . .
 
 # Build arguments for environment variables (required at build time)
 ARG VITE_APP_NAME=MiniURL
+ARG VITE_APP_DESCRIPTION=Amazon of URL's
 ARG VITE_API_URL=http://localhost:8080
 
 # Set environment variables for build
 ENV VITE_APP_NAME=${VITE_APP_NAME}
+ENV VITE_APP_DESCRIPTION=${VITE_APP_DESCRIPTION}
 ENV VITE_API_URL=${VITE_API_URL}
 
 # Build the application

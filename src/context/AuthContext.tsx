@@ -41,8 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             createdAt: new Date().toISOString(),
             lastLogin: userData.lastLogin || null,
           });
-          // Load features for logged in user
-          await featureService.getUserFeatures();
+          // Features are already loaded by InitializationContext, no need to fetch again
         } catch (e) {
           console.error('Error parsing user data:', e);
           authService.logout();

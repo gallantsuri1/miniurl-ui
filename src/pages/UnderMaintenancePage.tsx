@@ -2,14 +2,14 @@ import { useState, useEffect } from 'react';
 import { Container, Box, Typography, Paper, CircularProgress, Button } from '@mui/material';
 import { Build as BuildIcon, Refresh as RefreshIcon } from '@mui/icons-material';
 import healthService from '../services/healthService';
-import { useFeatures } from '../context/FeatureContext';
+import config from '../config';
 
 interface UnderMaintenancePageProps {
   onServiceRestored: () => void;
 }
 
 export default function UnderMaintenancePage({ onServiceRestored }: UnderMaintenancePageProps) {
-  const { getAppName } = useFeatures();
+  const appName = config.appName;
   const [isChecking, setIsChecking] = useState(false);
   const [lastCheck, setLastCheck] = useState<Date | null>(null);
   const [nextCheck, setNextCheck] = useState<number>(20);
@@ -95,7 +95,7 @@ export default function UnderMaintenancePage({ onServiceRestored }: UnderMainten
                 color: 'primary.main',
               }}
             >
-              🔗 {getAppName()}
+              🔗 {appName}
             </Typography>
 
             {/* Construction Icon */}

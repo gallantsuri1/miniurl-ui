@@ -172,12 +172,18 @@ export function FeatureProvider({ children }: { children: ReactNode }) {
 
   const getAppName = (): string => {
     const appNameFeature = globalFeatures.find(f => f.featureKey === 'GLOBAL_APP_NAME');
-    return appNameFeature?.featureName || config.appName;
+    if (appNameFeature?.enabled) {
+      return appNameFeature.featureName;
+    }
+    return config.appName;
   };
 
   const getAppSubtitle = (): string => {
     const appNameFeature = globalFeatures.find(f => f.featureKey === 'GLOBAL_APP_NAME');
-    return appNameFeature?.description || config.appDescription;
+    if (appNameFeature?.enabled) {
+      return appNameFeature.description;
+    }
+    return config.appDescription;
   };
 
   const refreshFeatures = async () => {

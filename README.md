@@ -71,12 +71,14 @@ Copy `.env.example` to `.env` and configure:
 
 ```bash
 VITE_APP_NAME=MiniURL
+VITE_APP_DESCRIPTION=Amazon of URL's
 VITE_API_URL=http://localhost:8080
 ```
 
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `VITE_APP_NAME` | Application name displayed in UI | `MiniURL` |
+| `VITE_APP_DESCRIPTION` | Application subtitle/description | `Amazon of URL's` |
 | `VITE_API_URL` | Backend API base URL | `http://localhost:8080` |
 
 ## Default Credentials
@@ -288,6 +290,7 @@ src/
 ```bash
 # Application Configuration
 VITE_APP_NAME=MiniURL
+VITE_APP_DESCRIPTION=Amazon of URL's
 
 # Backend API URL
 VITE_API_URL=https://api.example.com
@@ -308,6 +311,7 @@ services:
       dockerfile: Dockerfile
       args:
         VITE_APP_NAME: ${VITE_APP_NAME:-MiniURL}
+        VITE_APP_DESCRIPTION: ${VITE_APP_DESCRIPTION:-Amazon of URL's}
         VITE_API_URL: ${VITE_API_URL:-https://api.example.com}
     ports:
       - "${UI_PORT:-80}:80"
@@ -347,6 +351,7 @@ http://your-server-ip
 ```bash
 docker build \
   --build-arg VITE_APP_NAME=MiniURL \
+  --build-arg VITE_APP_DESCRIPTION="Amazon of URL's" \
   --build-arg VITE_API_URL=https://api.example.com \
   -t miniurl-ui:latest .
 ```
@@ -388,6 +393,7 @@ services:
       dockerfile: Dockerfile
       args:
         VITE_APP_NAME: MiniURL
+        VITE_APP_DESCRIPTION: "Amazon of URL's"
         VITE_API_URL: https://api.example.com
     restart: unless-stopped
     networks:
@@ -458,6 +464,7 @@ docker-compose up -d --build
 | Variable | Description | Default | Example |
 |----------|-------------|---------|---------|
 | `VITE_APP_NAME` | Application name displayed in UI | `MiniURL` | `MyURLShortener` |
+| `VITE_APP_DESCRIPTION` | Application subtitle/description | `Amazon of URL's` | `Your URL Shortener` |
 | `VITE_API_URL` | Backend API base URL | `http://localhost:8080` | `https://api.example.com` |
 | `UI_PORT` | Host port mapping (Docker Compose only) | `80` | `3000` |
 

@@ -1,7 +1,8 @@
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme, CssBaseline, CircularProgress, Box } from '@mui/material';
 import { AuthProvider } from './context/AuthContext';
-import { FeatureProvider } from './context/FeatureContext';
+import { FeatureProvider, useFeatures } from './context/FeatureContext';
 import { HealthProvider } from './context/HealthContext';
 import { InitializationProvider, useInitialization } from './context/InitializationContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -114,6 +115,21 @@ const theme = createTheme({
   },
 });
 
+// Separate component to update document title - must be inside FeatureProvider
+function DocumentTitleUpdater() {
+  const { getAppName, getAppSubtitle, isGlobalFeaturesLoaded } = useFeatures();
+
+  useEffect(() => {
+    if (isGlobalFeaturesLoaded) {
+      const name = getAppName();
+      const subtitle = getAppSubtitle();
+      document.title = subtitle ? `${name} - ${subtitle}` : name;
+    }
+  }, [isGlobalFeaturesLoaded, getAppName, getAppSubtitle]);
+
+  return null;
+}
+
 function AppContent() {
   const { isHealthy, isLoading, isInitialized } = useInitialization();
 
@@ -148,9 +164,10 @@ function AppContent() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <BrowserRouter>
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <AuthProvider>
           <FeatureProvider>
+            <DocumentTitleUpdater />
             <Routes>
               {/* Public Routes */}
               <Route path="/login" element={<LoginPage />} />
