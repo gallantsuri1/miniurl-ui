@@ -20,9 +20,10 @@ import {
   CheckCircle as CheckCircleIcon,
 } from '@mui/icons-material';
 import authService from '../services/authService';
-import config from '../config';
+import { useFeatures } from '../context/FeatureContext';
 
 export default function SignupPage() {
+  const { getAppName } = useFeatures();
   const [searchParams] = useSearchParams();
   
   const [inviteToken, setInviteToken] = useState('');
@@ -172,7 +173,7 @@ export default function SignupPage() {
         <Container maxWidth="sm">
           <Paper elevation={3} sx={{ p: 4, textAlign: 'center' }}>
             <Typography variant="h3" sx={{ fontWeight: 700, mb: 1, color: 'primary.main' }}>
-              🔗 {config.appName}
+              🔗 {getAppName()}
             </Typography>
             <Typography variant="h5" color="error" gutterBottom>
               Invitation Invalid
@@ -212,7 +213,7 @@ export default function SignupPage() {
         <Container maxWidth="sm">
           <Paper elevation={3} sx={{ p: 4, textAlign: 'center' }}>
             <Typography variant="h3" sx={{ fontWeight: 700, mb: 2, color: 'primary.main' }}>
-              🔗 {config.appName}
+              🔗 {getAppName()}
             </Typography>
             <CheckCircleIcon sx={{ fontSize: 80, color: 'success.main', mb: 2 }} />
             <Typography variant="h4" fontWeight={700} gutterBottom>
@@ -269,7 +270,7 @@ export default function SignupPage() {
                   color: 'primary.main',
                 }}
               >
-                🔗 {config.appName}
+                🔗 {getAppName()}
               </Typography>
               <Typography color="text.secondary">
                 Create Your Account
@@ -417,7 +418,7 @@ export default function SignupPage() {
             }}
           >
             <Typography variant="caption" color="text.secondary">
-              © {new Date().getFullYear()} {config.appName}. All rights reserved.
+              © {new Date().getFullYear()} {getAppName()}. All rights reserved.
             </Typography>
           </Box>
         </Paper>

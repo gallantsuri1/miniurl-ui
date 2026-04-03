@@ -6,6 +6,9 @@ export const config = {
   /** Application name displayed in UI */
   appName: import.meta.env.VITE_APP_NAME || 'MiniURL',
 
+  /** Application description/subtitle */
+  appDescription: import.meta.env.VITE_APP_DESCRIPTION || 'URL Shortener',
+
   /** Backend API base URL */
   apiUrl: import.meta.env.VITE_API_URL || 'http://localhost:8080',
 

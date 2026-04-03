@@ -20,12 +20,11 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 import { useFeatures } from '../context/FeatureContext';
-import config from '../config';
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const { login, isAuthenticated } = useAuth();
-  const { isFeatureEnabled, isLoaded } = useFeatures();
+  const { isFeatureEnabled, isLoaded, getAppName, getAppSubtitle } = useFeatures();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     username: '',
@@ -35,7 +34,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   // Check if signup is enabled (from global features)
-  const isSignupEnabled = isFeatureEnabled('USER_SIGNUP');
+  const isSignupEnabled = isFeatureEnabled('GLOBAL_USER_SIGNUP');
 
   // Redirect based on feature access after login or if already authenticated
   useEffect(() => {
@@ -105,10 +104,10 @@ export default function LoginPage() {
                   color: 'primary.main',
                 }}
               >
-                🔗 {config.appName}
+                🔗 {getAppName()}
               </Typography>
               <Typography color="text.secondary">
-                URL Shortener
+                {getAppSubtitle()}
               </Typography>
             </Box>
 
@@ -175,7 +174,7 @@ export default function LoginPage() {
                   {isLoading ? 'Signing in...' : 'Sign In'}
                 </Button>
 
-                {/* Signup link - shown only if USER_SIGNUP feature is enabled */}
+                {/* Signup link - shown only if GLOBAL_USER_SIGNUP feature is enabled */}
                 {isSignupEnabled && (
                   <Box sx={{ textAlign: 'center', pt: 2 }}>
                     <Typography variant="body2" color="text.secondary">
@@ -206,7 +205,7 @@ export default function LoginPage() {
             }}
           >
             <Typography variant="caption" color="text.secondary">
-              © {new Date().getFullYear()} {config.appName}. All rights reserved.
+              © {new Date().getFullYear()} {getAppName()}. All rights reserved.
             </Typography>
           </Box>
         </Paper>

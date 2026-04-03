@@ -24,13 +24,15 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 import { useFeatures } from '../context/FeatureContext';
-import config from '../config';
 
 export default function Header() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const { isLoading, isFeatureEnabled, getFeatureName } = useFeatures();
+  const { isLoading, isFeatureEnabled, getFeatureName, getAppName, getAppSubtitle } = useFeatures();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const appName = getAppName();
+  const appSubtitle = getAppSubtitle();
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -48,25 +50,38 @@ export default function Header() {
   return (
     <AppBar position="static" elevation={0} sx={{ bgcolor: 'background.paper', borderBottom: '1px solid', borderColor: 'divider' }}>
       <Container maxWidth="xl">
-        <Toolbar sx={{ minHeight: 64, px: 0 }}>
+        <Toolbar sx={{ minHeight: 64, px: '0 !important' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', mr: 3 }}>
-            <Typography
-              variant="h4"
-              fontWeight={700}
-              color="text.primary"
+            <Box
               sx={{ cursor: 'pointer' }}
               onClick={() => navigate('/dashboard')}
             >
-              🔗 {config.appName}
-            </Typography>
+              <Typography
+                variant="h4"
+                fontWeight={700}
+                color="text.primary"
+                lineHeight={1.2}
+              >
+                🔗 {appName}
+              </Typography>
+              {appSubtitle && (
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  lineHeight={1.4}
+                >
+                  {appSubtitle}
+                </Typography>
+              )}
+            </Box>
           </Box>
 
           <Box sx={{ flexGrow: 1 }} />
 
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Tooltip title="Profile">
-              <IconButton 
-                onClick={() => navigate('/profile')} 
+              <IconButton
+                onClick={() => navigate('/profile')}
                 sx={{ ml: 1 }}
               >
                 <Avatar
@@ -138,7 +153,7 @@ export default function Header() {
                 )}
               </>
             )}
-            
+
             <Divider />
             <MenuItem onClick={handleLogout} sx={{ color: 'error.main' }}>
               <ListItemIcon>

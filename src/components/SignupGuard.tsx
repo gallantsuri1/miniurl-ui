@@ -15,7 +15,7 @@ export default function SignupGuard({ children }: SignupGuardProps) {
   useEffect(() => {
     // Wait for global features to load before checking
     if (isGlobalFeaturesLoaded) {
-      const signupEnabled = isFeatureEnabled('USER_SIGNUP');
+      const signupEnabled = isFeatureEnabled('GLOBAL_USER_SIGNUP');
       setIsAllowed(signupEnabled);
       setIsChecking(false);
     }

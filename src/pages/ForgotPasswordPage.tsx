@@ -13,12 +13,13 @@ import {
 } from '@mui/material';
 import { Email as EmailIcon, CheckCircle as CheckCircleIcon } from '@mui/icons-material';
 import authService from '../services/authService';
-import config from '../config';
+import { useFeatures } from '../context/FeatureContext';
 
 // Email validation regex pattern
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function ForgotPasswordPage() {
+  const { getAppName, getAppSubtitle } = useFeatures();
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -109,10 +110,10 @@ export default function ForgotPasswordPage() {
                   color: 'primary.main',
                 }}
               >
-                🔗 {config.appName}
+                🔗 {getAppName()}
               </Typography>
               <Typography color="text.secondary">
-                Forgot Password
+                {getAppSubtitle()}
               </Typography>
             </Box>
 
@@ -222,7 +223,7 @@ export default function ForgotPasswordPage() {
             }}
           >
             <Typography variant="caption" color="text.secondary">
-              © {new Date().getFullYear()} {config.appName}. All rights reserved.
+              © {new Date().getFullYear()} {getAppName()}. All rights reserved.
             </Typography>
           </Box>
         </Paper>

@@ -99,7 +99,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
     
     // Reload global features to ensure login page has latest data
-    // This ensures USER_SIGNUP and other global features are up to date
+    // This ensures GLOBAL_USER_SIGNUP and other global features are up to date
     try {
       const globalFeatures = await featureService.getGlobalFeatures();
       if (typeof window !== 'undefined') {

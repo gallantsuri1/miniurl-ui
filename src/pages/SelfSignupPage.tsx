@@ -14,13 +14,12 @@ import {
 import { Email as EmailIcon, CheckCircle as CheckCircleIcon } from '@mui/icons-material';
 import { useFeatures } from '../context/FeatureContext';
 import selfInviteService from '../services/selfInviteService';
-import config from '../config';
 
 // Email validation regex pattern
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function SelfSignupPage() {
-  const { isFeatureEnabled } = useFeatures();
+  const { isFeatureEnabled, getAppName, getAppSubtitle } = useFeatures();
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -28,7 +27,7 @@ export default function SelfSignupPage() {
   const [emailTouched, setEmailTouched] = useState(false);
 
   // Check if self-signup is enabled
-  const isSignupEnabled = isFeatureEnabled('USER_SIGNUP');
+  const isSignupEnabled = isFeatureEnabled('GLOBAL_USER_SIGNUP');
 
   const validateEmail = (value: string): boolean => {
     if (!value) return false;
@@ -156,10 +155,10 @@ export default function SelfSignupPage() {
                   color: 'primary.main',
                 }}
               >
-                🔗 {config.appName}
+                🔗 {getAppName()}
               </Typography>
               <Typography color="text.secondary">
-                Request Access
+                {getAppSubtitle()}
               </Typography>
             </Box>
 
@@ -265,7 +264,7 @@ export default function SelfSignupPage() {
             }}
           >
             <Typography variant="caption" color="text.secondary">
-              © {new Date().getFullYear()} {config.appName}. All rights reserved.
+              © {new Date().getFullYear()} {getAppName()}. All rights reserved.
             </Typography>
           </Box>
         </Paper>

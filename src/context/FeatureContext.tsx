@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 import featureService from '../services/featureService';
 import { Feature } from '../types';
 import { useInitialization } from './InitializationContext';
+import config from '../config';
 
 interface FeatureContextType {
   features: Feature[];
@@ -14,6 +15,8 @@ interface FeatureContextType {
   getDescription: (key: string) => string;
   getGlobalFeature: (key: string) => Feature | undefined;
   getUserFeature: (key: string) => Feature | undefined;
+  getAppName: () => string;
+  getAppSubtitle: () => string;
   refreshFeatures: () => Promise<void>;
 }
 
@@ -129,8 +132,8 @@ export function FeatureProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const isFeatureEnabled = (key: string): boolean => {
-    // For global features (like USER_SIGNUP), check global features first
-    if (key === 'USER_SIGNUP') {
+    // For global features (prefixed with GLOBAL_), check global features first
+    if (key.startsWith('GLOBAL_')) {
       const globalFeature = globalFeatures.find(f => f.featureKey === key);
       return globalFeature?.enabled ?? false;
     }
@@ -167,6 +170,16 @@ export function FeatureProvider({ children }: { children: ReactNode }) {
     return features.find(f => f.featureKey === key);
   };
 
+  const getAppName = (): string => {
+    const appNameFeature = globalFeatures.find(f => f.featureKey === 'GLOBAL_APP_NAME');
+    return appNameFeature?.featureName || config.appName;
+  };
+
+  const getAppSubtitle = (): string => {
+    const appNameFeature = globalFeatures.find(f => f.featureKey === 'GLOBAL_APP_NAME');
+    return appNameFeature?.description || config.appDescription;
+  };
+
   const refreshFeatures = async () => {
     featuresCache = null; // Clear cache
     setIsLoaded(false);
@@ -185,6 +198,8 @@ export function FeatureProvider({ children }: { children: ReactNode }) {
     getDescription,
     getGlobalFeature,
     getUserFeature,
+    getAppName,
+    getAppSubtitle,
     refreshFeatures,
   };
 

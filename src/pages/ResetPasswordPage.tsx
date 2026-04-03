@@ -20,9 +20,10 @@ import {
   CheckCircle as CheckCircleIcon,
 } from '@mui/icons-material';
 import authService from '../services/authService';
-import config from '../config';
+import { useFeatures } from '../context/FeatureContext';
 
 export default function ResetPasswordPage() {
+  const { getAppName } = useFeatures();
   const [searchParams] = useSearchParams();
   const [token, setToken] = useState('');
   const [isVerifying, setIsVerifying] = useState(true);
@@ -188,7 +189,7 @@ export default function ResetPasswordPage() {
                   color: 'primary.main',
                 }}
               >
-                🔗 {config.appName}
+                🔗 {getAppName()}
               </Typography>
               <Typography color="text.secondary">
                 Reset Password
@@ -252,7 +253,7 @@ export default function ResetPasswordPage() {
                   color: 'primary.main',
                 }}
               >
-                🔗 {config.appName}
+                🔗 {getAppName()}
               </Typography>
               <Typography color="text.secondary">
                 Reset Password
@@ -318,7 +319,7 @@ export default function ResetPasswordPage() {
                   color: 'primary.main',
                 }}
               >
-                🔗 {config.appName}
+                🔗 {getAppName()}
               </Typography>
               <Typography color="text.secondary">
                 Reset Password
@@ -432,7 +433,7 @@ export default function ResetPasswordPage() {
             }}
           >
             <Typography variant="caption" color="text.secondary">
-              © {new Date().getFullYear()} {config.appName}. All rights reserved.
+              © {new Date().getFullYear()} {getAppName()}. All rights reserved.
             </Typography>
           </Box>
         </Paper>

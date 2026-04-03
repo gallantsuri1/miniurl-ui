@@ -49,7 +49,7 @@ export default function Navigation({ children }: NavigationProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
-  const { isLoading, isFeatureEnabled, getFeatureName } = useFeatures();
+  const { isLoading, isFeatureEnabled, getFeatureName, getAppName } = useFeatures();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -114,7 +114,7 @@ export default function Navigation({ children }: NavigationProps) {
       >
         <LinkIcon sx={{ mr: 1 }} />
         <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 600 }}>
-          {config.appName}
+          {getAppName()}
         </Typography>
       </Toolbar>
       <Divider />
