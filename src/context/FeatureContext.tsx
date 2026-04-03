@@ -11,6 +11,7 @@ interface FeatureContextType {
   isGlobalFeaturesLoaded: boolean;
   isFeatureEnabled: (key: string) => boolean;
   getFeatureName: (key: string) => string;
+  getDescription: (key: string) => string;
   getGlobalFeature: (key: string) => Feature | undefined;
   getUserFeature: (key: string) => Feature | undefined;
   refreshFeatures: () => Promise<void>;
@@ -146,9 +147,16 @@ export function FeatureProvider({ children }: { children: ReactNode }) {
 
   const getFeatureName = (key: string): string => {
     // Try user features first, then global features
-    const feature = features.find(f => f.featureKey === key) || 
+    const feature = features.find(f => f.featureKey === key) ||
                     globalFeatures.find(f => f.featureKey === key);
     return feature?.featureName || key;
+  };
+
+  const getDescription = (key: string): string => {
+    // Try user features first, then global features
+    const feature = features.find(f => f.featureKey === key) ||
+                    globalFeatures.find(f => f.featureKey === key);
+    return feature?.description || '';
   };
 
   const getGlobalFeature = (key: string): Feature | undefined => {
@@ -174,6 +182,7 @@ export function FeatureProvider({ children }: { children: ReactNode }) {
     isGlobalFeaturesLoaded,
     isFeatureEnabled,
     getFeatureName,
+    getDescription,
     getGlobalFeature,
     getUserFeature,
     refreshFeatures,

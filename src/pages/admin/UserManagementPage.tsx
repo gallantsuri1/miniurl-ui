@@ -56,7 +56,7 @@ import { AdminUser, AdminStats, UserStatus } from '../../types';
 
 export default function UserManagementPage() {
   const navigate = useNavigate();
-  const { getFeatureName } = useFeatures();
+  const { getFeatureName, getDescription } = useFeatures();
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [error, setError] = useState('');
   const [stats, setStats] = useState<AdminStats | null>(null);
@@ -225,9 +225,7 @@ export default function UserManagementPage() {
             <Typography variant="h4" fontWeight={700} gutterBottom>
               {getFeatureName('USER_MANAGEMENT')}
             </Typography>
-            <Typography color="text.secondary">
-              Manage all users in the system
-            </Typography>
+            <Typography color="text.secondary">{getDescription('USER_MANAGEMENT')}</Typography>
           </Box>
           <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={() => navigate('/dashboard')}>
             Back to Dashboard

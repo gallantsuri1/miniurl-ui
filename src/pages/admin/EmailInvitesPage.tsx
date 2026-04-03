@@ -45,11 +45,10 @@ import Header from '../../components/Header';
 import { useFeatures } from '../../context/FeatureContext';
 import emailInviteService, { EmailInvitesQueryParams } from '../../services/emailInviteService';
 import { EmailInvite } from '../../types';
-import config from '../../config';
 
 export default function EmailInvitesPage() {
   const navigate = useNavigate();
-  const { getFeatureName } = useFeatures();
+  const { getFeatureName, getDescription } = useFeatures();
   const [invites, setInvites] = useState<EmailInvite[]>([]);
   const [stats, setStats] = useState<{ total: number; pending: number; accepted: number; revoked?: number; expired?: number } | null>(null);
   const [error, setError] = useState('');
@@ -224,7 +223,7 @@ export default function EmailInvitesPage() {
             <Typography variant="h4" fontWeight={700} gutterBottom>
               {getFeatureName('EMAIL_INVITE')}
             </Typography>
-            <Typography color="text.secondary">Invite users to join {config.appName}</Typography>
+            <Typography color="text.secondary">{getDescription('EMAIL_INVITE')}</Typography>
           </Box>
           <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={() => navigate('/dashboard')}>
             Back to Dashboard

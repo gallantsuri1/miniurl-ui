@@ -51,7 +51,7 @@ export default function Header() {
         <Toolbar sx={{ minHeight: 64, px: 0 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', mr: 3 }}>
             <Typography
-              variant="h5"
+              variant="h4"
               fontWeight={700}
               color="text.primary"
               sx={{ cursor: 'pointer' }}

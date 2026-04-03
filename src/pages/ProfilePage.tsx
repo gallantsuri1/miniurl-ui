@@ -23,7 +23,7 @@ import { useAuth } from '../context/AuthContext';
 export default function ProfilePage() {
   const navigate = useNavigate();
   const { user, updateUser } = useAuth();
-  const { getFeatureName } = useFeatures();
+  const { getFeatureName, getDescription } = useFeatures();
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
@@ -90,7 +90,7 @@ export default function ProfilePage() {
             <Typography variant="h4" fontWeight={700} gutterBottom>
               {getFeatureName('PROFILE_PAGE')}
             </Typography>
-            <Typography color="text.secondary">Manage your account information</Typography>
+            <Typography color="text.secondary">{getDescription('PROFILE_PAGE')}</Typography>
           </Box>
           <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={() => navigate('/dashboard')}>
             Back to Dashboard

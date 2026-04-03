@@ -33,7 +33,7 @@ import config from '../config';
 
 export default function SettingsPage() {
   const navigate = useNavigate();
-  const { isFeatureEnabled, getFeatureName } = useFeatures();
+  const { isFeatureEnabled, getFeatureName, getDescription } = useFeatures();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -123,7 +123,7 @@ export default function SettingsPage() {
             <Typography variant="h4" fontWeight={700} gutterBottom>
               {getFeatureName('SETTINGS_PAGE')}
             </Typography>
-            <Typography color="text.secondary">Manage your account settings</Typography>
+            <Typography color="text.secondary">{getDescription('SETTINGS_PAGE')}</Typography>
           </Box>
           <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={() => navigate('/dashboard')}>
             Back to Dashboard

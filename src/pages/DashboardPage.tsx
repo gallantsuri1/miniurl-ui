@@ -46,7 +46,7 @@ import { useFeatures } from '../context/FeatureContext';
 import { Url, UrlStats, CreateUrlRequest } from '../types';
 
 export default function DashboardPage() {
-  const { isFeatureEnabled, getFeatureName } = useFeatures();
+  const { isFeatureEnabled, getFeatureName, getDescription } = useFeatures();
   const [urls, setUrls] = useState<Url[]>([]);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -206,7 +206,7 @@ export default function DashboardPage() {
           <Typography variant="h4" fontWeight={700} gutterBottom>
             {getFeatureName('DASHBOARD')}
           </Typography>
-          <Typography color="text.secondary">Create and manage your short URLs</Typography>
+          <Typography color="text.secondary">{getDescription('DASHBOARD')}</Typography>
         </Box>
 
         {/* Create URL Card */}

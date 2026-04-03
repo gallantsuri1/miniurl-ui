@@ -69,7 +69,7 @@ interface AddGlobalFeatureFormData {
 
 export default function FeatureFlagsPage() {
   const navigate = useNavigate();
-  const { getFeatureName } = useFeatures();
+  const { getFeatureName, getDescription } = useFeatures();
   const [roleFeatures, setRoleFeatures] = useState<RoleFeature[]>([]);
   const [globalFeatures, setGlobalFeatures] = useState<Feature[]>([]);
   const [error, setError] = useState('');
@@ -293,9 +293,7 @@ export default function FeatureFlagsPage() {
                 {getFeatureName('FEATURE_MANAGEMENT')}
               </Typography>
             </Box>
-            <Typography color="text.secondary">
-              Manage role-based and global feature flags
-            </Typography>
+            <Typography color="text.secondary">{getDescription('FEATURE_MANAGEMENT')}</Typography>
           </Box>
           <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={() => navigate('/dashboard')}>
             Back to Dashboard
