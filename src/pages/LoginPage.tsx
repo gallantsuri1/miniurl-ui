@@ -1,0 +1,216 @@
+import { useState, useEffect } from 'react';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import {
+  Container,
+  Box,
+  Paper,
+  Typography,
+  TextField,
+  Button,
+  Link,
+  Alert,
+  InputAdornment,
+  IconButton,
+  Stack,
+} from '@mui/material';
+import {
+  Visibility,
+  VisibilityOff,
+  Login as LoginIcon,
+} from '@mui/icons-material';
+import { useAuth } from '../context/AuthContext';
+import { useFeatures } from '../context/FeatureContext';
+import config from '../config';
+
+export default function LoginPage() {
+  const navigate = useNavigate();
+  const { login, isAuthenticated } = useAuth();
+  const { isFeatureEnabled, isLoaded } = useFeatures();
+  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    username: '',
+    password: '',
+  });
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Check if signup is enabled (from global features)
+  const isSignupEnabled = isFeatureEnabled('USER_SIGNUP');
+
+  // Redirect based on feature access after login or if already authenticated
+  useEffect(() => {
+    if (isAuthenticated && isLoaded) {
+      // Check if user has dashboard access
+      if (isFeatureEnabled('DASHBOARD')) {
+        navigate('/dashboard', { replace: true });
+      } else {
+        navigate('/no-permission', { replace: true });
+      }
+    }
+  }, [isAuthenticated, isLoaded, isFeatureEnabled, navigate]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+    setError('');
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
+
+    try {
+      await login(formData.username, formData.password);
+      // After login, the useEffect will handle redirection based on feature access
+    } catch (err: any) {
+      console.error('Login error:', err);
+      setError(err.response?.data?.message || err.message || 'Invalid username or password');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <Box
+      sx={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        bgcolor: 'background.default',
+        py: 4,
+      }}
+    >
+      <Container maxWidth="sm">
+        <Paper
+          elevation={0}
+          sx={{
+            borderRadius: 3,
+            overflow: 'hidden',
+            border: '1px solid',
+            borderColor: 'divider',
+          }}
+        >
+          <Box sx={{ p: { xs: 3, sm: 5 } }}>
+            {/* Header */}
+            <Box textAlign="center" mb={4}>
+              <Typography
+                variant="h3"
+                sx={{
+                  fontWeight: 700,
+                  mb: 1,
+                  color: 'primary.main',
+                }}
+              >
+                🔗 {config.appName}
+              </Typography>
+              <Typography color="text.secondary">
+                URL Shortener
+              </Typography>
+            </Box>
+
+            {error && (
+              <Alert severity="error" sx={{ mb: 3 }}>
+                {error}
+              </Alert>
+            )}
+
+            <form onSubmit={handleSubmit}>
+              <Stack spacing={3}>
+                <TextField
+                  fullWidth
+                  label="Username or Email"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  required
+                  autoFocus
+                />
+
+                <TextField
+                  fullWidth
+                  label="Password"
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => setShowPassword(!showPassword)}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+
+                <Box sx={{ textAlign: 'right' }}>
+                  <Link
+                    component={RouterLink}
+                    to="/forgot-password"
+                    underline="hover"
+                    variant="body2"
+                  >
+                    Forgot Password?
+                  </Link>
+                </Box>
+
+                <Button
+                  type="submit"
+                  variant="contained"
+                  size="large"
+                  fullWidth
+                  disabled={isLoading}
+                  startIcon={<LoginIcon />}
+                  sx={{ py: 1.5 }}
+                >
+                  {isLoading ? 'Signing in...' : 'Sign In'}
+                </Button>
+
+                {/* Signup link - shown only if USER_SIGNUP feature is enabled */}
+                {isSignupEnabled && (
+                  <Box sx={{ textAlign: 'center', pt: 2 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      Don't have an account?{' '}
+                      <Link
+                        component={RouterLink}
+                        to="/self-signup"
+                        underline="hover"
+                        fontWeight={600}
+                      >
+                        Sign Up
+                      </Link>
+                    </Typography>
+                  </Box>
+                )}
+              </Stack>
+            </form>
+          </Box>
+
+          {/* Footer */}
+          <Box
+            sx={{
+              bgcolor: 'grey.50',
+              p: 2,
+              textAlign: 'center',
+              borderTop: '1px solid',
+              borderColor: 'divider',
+            }}
+          >
+            <Typography variant="caption" color="text.secondary">
+              © {new Date().getFullYear()} {config.appName}. All rights reserved.
+            </Typography>
+          </Box>
+        </Paper>
+      </Container>
+    </Box>
+  );
+}

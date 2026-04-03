@@ -1,0 +1,79 @@
+# ==========================================
+# MiniURL Monorepo .gitignore
+# ==========================================
+
+# ==========================================
+# Build Outputs - MiniURL API (Spring Boot)
+# ==========================================
+miniurl-api/target/
+miniurl-api/*.log
+miniurl-api/.mvn/
+miniurl-api/mvnw
+miniurl-api/mvnw.cmd
+
+# ==========================================
+# Build Outputs - MiniURL UI (Vite/React)
+# ==========================================
+miniurl-ui/node_modules/
+miniurl-ui/dist/
+miniurl-ui/npm-debug.log*
+miniurl-ui/yarn-debug.log*
+miniurl-ui/yarn-error.log*
+
+# ==========================================
+# Environment Files (Both Apps)
+# ==========================================
+.env
+.env.local
+.env.*.local
+miniurl-api/.env
+miniurl-ui/.env
+
+# ==========================================
+# Database Files
+# ==========================================
+*.db
+*.mv.db
+*.trace.db
+
+# ==========================================
+# IDE Files
+# ==========================================
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+*~
+
+# ==========================================
+# OS Files
+# ==========================================
+.DS_Store
+Thumbs.db
+
+# ==========================================
+# Terraform
+# ==========================================
+*.tfstate
+*.tfstate.lock
+*.tfvars
+
+# ==========================================
+# Docker
+# ==========================================
+*.pid
+*.sock
+
+# ==========================================
+# Logs
+# ==========================================
+*.log
+logs/
+
+# ==========================================
+# Package Manager Lock Files (Optional)
+# Uncomment if you want to exclude lock files
+# ==========================================
+# miniurl-ui/package-lock.json
+# miniurl-ui/yarn.lock
