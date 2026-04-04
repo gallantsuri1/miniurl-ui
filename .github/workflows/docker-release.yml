@@ -69,6 +69,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Create notification issue
+        if: success()
         uses: actions/github-script@v7
         with:
           script: |
@@ -95,15 +96,32 @@ jobs:
 
             🔗 [View Build Log](${runUrl})`;
 
-            // Create an issue assigned to the workflow triggerer
-            const actor = process.env.GITHUB_ACTOR || 'unknown';
+            // Create an issue assigned to the workflow triggerer — GitHub sends them an email notification
+            const actor = context.actor;
             const issue = await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: `🐳 Docker image published for ${tagName}`,
+              title: `🐳 Docker image published: ${tagName}`,
               body: commentBody,
               labels: ['release', 'docker'],
               assignees: [actor]
             });
 
-            console.log(`Created notification issue #${issue.data.number} and assigned to @${actor}`);
+            console.log(`Created issue #${issue.data.number} and assigned to @${actor} — GitHub will email them`);
+
+      - name: Notify on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tagName = '${{ steps.tag.outputs.TAG_NAME }}';
+            const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `❌ Docker build failed: ${tagName}`,
+              body: `The Docker image build for \`${tagName}\` failed.\n\n🔗 [View Build Log](${runUrl})`,
+              labels: ['release', 'docker', 'failed-build'],
+              assignees: [context.actor]
+            });
