@@ -1,24 +1,48 @@
 name: Build and Publish Docker Image
 
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to build (e.g., v1.0.0)'
+        required: true
+        type: string
 
 permissions:
-  contents: write
+  contents: read
   packages: write
   issues: write
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-    if: github.event.release.target_commitish == 'main' || github.event.release.target_commitish == 'master'
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Extract tag name
+        id: tag
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "TAG_NAME=${{ inputs.tag }}" >> $GITHUB_OUTPUT
+          else
+            echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Verify branch is main or master
+        run: |
+          BRANCH=$(git branch -r --contains ${{ github.ref }} | grep -E 'origin/(main|master)' | head -1 || true)
+          if [ -z "$BRANCH" ]; then
+            echo "❌ Tag is not on main or master branch. Skipping."
+            exit 1
+          fi
+          echo "✅ Tag is on $BRANCH"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -32,10 +56,6 @@ jobs:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_API_TOKEN }}
 
-      - name: Extract release tag
-        id: tag
-        run: echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
-
       - name: Build and push multi-platform image
         uses: docker/build-push-action@v5
         with:
@@ -48,14 +68,13 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Notify release creator
+      - name: Create notification issue
         uses: actions/github-script@v7
         with:
           script: |
-            const release = context.payload.release;
-            const creator = release.author?.login || 'unknown';
-            const tagName = release.tag_name;
+            const tagName = '${{ steps.tag.outputs.TAG_NAME }}';
             const imageName = `${{ secrets.DOCKER_USER }}/miniurl-ui`;
+            const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
 
             const commentBody = `🚀 **Release ${tagName}** has been built and published to Docker Hub!
 
@@ -74,16 +93,17 @@ jobs:
               ${imageName}:${tagName}
             \`\`\`
 
-            🔗 [View Release ${tagName}](${release.html_url})`;
+            🔗 [View Build Log](${runUrl})`;
 
-            // Create an issue assigned to the release creator (triggers email notification)
+            // Create an issue assigned to the workflow triggerer
+            const actor = process.env.GITHUB_ACTOR || 'unknown';
             const issue = await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: `🐳 Docker image published for ${tagName}`,
               body: commentBody,
               labels: ['release', 'docker'],
-              assignees: [creator]
+              assignees: [actor]
             });
 
-            console.log(`Created notification issue #${issue.data.number} and assigned to @${creator}`);
+            console.log(`Created notification issue #${issue.data.number} and assigned to @${actor}`);

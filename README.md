@@ -593,27 +593,20 @@ The project includes a GitHub Actions workflow that automatically builds and pub
 
 ### How to Trigger a Release
 
-#### Step 1: Create and push a tag
+#### Step 1: Create and push a tag (triggers automatically)
 ```bash
 git tag -a v1.1.0 -m "Release v1.1.0"
 git push origin v1.1.0
 ```
 
-#### Step 2: Publish the release on GitHub
-1. Go to your GitHub repository → **Releases** → **Draft a new release**
-2. Select the tag you just pushed (`v1.1.0`)
-3. Fill in the release title and description
-4. Click **Publish release**
+> That's it! The workflow triggers automatically on tag push. No need to create a release through the GitHub UI.
 
-> **Important:** The target branch must be `main` or `master` for the workflow to trigger.
-
-#### Step 3: Wait for the workflow
-The GitHub Actions workflow will:
+#### What the workflow does:
 - ✅ Build multi-platform Docker image (`linux/amd64` + `linux/arm64`)
 - ✅ Push to Docker Hub as `gallantsuri1/miniurl-ui:v1.1.0` and `gallantsuri1/miniurl-ui:latest`
 - ✅ Create a notification issue assigned to you (GitHub emails you automatically)
 
-#### Step 4: Deploy the new version
+#### Step 2: Deploy the new version
 ```bash
 # On your server
 cd ~/miniurl-ui
