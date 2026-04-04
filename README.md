@@ -297,11 +297,9 @@ docker login
 #### 2. Build the Image (Cross-Platform: macOS + Linux)
 ```bash
 # Build for both AMD64 (Intel) and ARM64 (Apple Silicon / ARM servers)
+# No build-args needed — env vars are injected at runtime via docker-compose
 docker buildx build --platform linux/amd64,linux/arm64 \
   --push \
-  --build-arg VITE_APP_NAME=MiniURL \
-  --build-arg VITE_APP_DESCRIPTION="Amazon of URL's" \
-  --build-arg VITE_API_URL=https://api.example.com \
   -t gallantsuri1/miniurl-ui:v1.0.0 .
 ```
 
@@ -332,9 +330,6 @@ echo $CR_PAT | docker login ghcr.io -u gallantsuri1 --password-stdin
 ```bash
 docker buildx build --platform linux/amd64,linux/arm64 \
   --push \
-  --build-arg VITE_APP_NAME=MiniURL \
-  --build-arg VITE_APP_DESCRIPTION="Amazon of URL's" \
-  --build-arg VITE_API_URL=https://api.example.com \
   -t ghcr.io/gallantsuri1/miniurl-ui:v1.0.0 .
 ```
 
@@ -354,8 +349,10 @@ docker buildx imagetools inspect ghcr.io/gallantsuri1/miniurl-ui:v1.0.0
 # UI Port (host mapping)
 UI_PORT=80
 
-# Override build-time values at runtime (optional)
-VITE_API_URL=https://prod-api.example.com
+# Runtime environment variables (injected into the container at startup)
+VITE_APP_NAME=MiniURL
+VITE_APP_DESCRIPTION=Amazon of URL's
+VITE_API_URL=https://api.suricloud.uk
 ```
 
 #### 2. Create `docker-compose.yml`
@@ -494,9 +491,6 @@ Use semantic versioning tags instead of `latest` for production:
 # Build with version tag (multi-platform + auto-push)
 docker buildx build --platform linux/amd64,linux/arm64 \
   --push \
-  --build-arg VITE_APP_NAME=MiniURL \
-  --build-arg VITE_APP_DESCRIPTION="Amazon of URL's" \
-  --build-arg VITE_API_URL=https://api.example.com \
   -t gallantsuri1/miniurl-ui:1.0.0 \
   -t gallantsuri1/miniurl-ui:latest .
 ```
@@ -523,7 +517,7 @@ docker image prune -f
 | `VITE_API_URL` | Backend API URL | `http://localhost:8080` | `https://api.example.com` |
 | `UI_PORT` | Host port mapping | `80` | `3000` |
 
-> **How runtime substitution works:** The Docker image creates a `config.js` file at container startup with your environment variables. The app reads `window.__APP_CONFIG__` at runtime, allowing you to **use a single image** across dev, staging, and production — no rebuild or `sed` needed.
+> **How it works:** The Docker image creates a `config.js` file at container startup with your environment variables from `docker-compose.yml` or `docker run -e`. The app reads `window.__APP_CONFIG__` at runtime, allowing you to **use a single image** across dev, staging, and production — no rebuild needed.
 
 ## Production Checklist
 

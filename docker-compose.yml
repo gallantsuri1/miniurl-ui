@@ -2,13 +2,7 @@ version: '3.8'
 
 services:
   miniurl-ui:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        VITE_APP_NAME: ${VITE_APP_NAME:-MiniURL}
-        VITE_APP_DESCRIPTION: ${VITE_APP_DESCRIPTION:-Amazon of URL's}
-        VITE_API_URL: ${VITE_API_URL:-http://localhost:8080}
+    image: gallantsuri1/miniurl-ui:v1.0.0
     ports:
       - "${UI_PORT:-80}:80"
     environment:
