@@ -46,10 +46,16 @@ apiClient.interceptors.response.use(
     }
     
     // Handle 401 Unauthorized - token expired or invalid
+    // Only redirect if user actually has a token stored (authenticated session)
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+      const token = localStorage.getItem('token');
+      if (token) {
+        // Authenticated session got 401 - token is invalid/expired
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      }
+      // No token stored - just pass the error through (public pages like forgot-password)
     }
 
     // Handle 403 Forbidden

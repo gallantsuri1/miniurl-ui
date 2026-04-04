@@ -21,7 +21,7 @@ export default defineConfig({
         if (req.url?.startsWith('/api/')) {
           return next()
         }
-        
+
         // For all other routes (including /admin/*, /dashboard, etc.), serve index.html
         const indexPath = path.resolve(__dirname, 'index.html')
         if (fs.existsSync(indexPath)) {

@@ -17,7 +17,7 @@ COPY . .
 # Build arguments for environment variables (required at build time)
 ARG VITE_APP_NAME=MiniURL
 ARG VITE_APP_DESCRIPTION=Amazon of URL's
-ARG VITE_API_URL=http://localhost:8080
+ARG VITE_API_URL=https://api.suricloud.uk
 
 # Set environment variables for build
 ENV VITE_APP_NAME=${VITE_APP_NAME}

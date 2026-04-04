@@ -278,43 +278,101 @@ src/
 
 ## Prerequisites
 
-- Docker installed on the server
-- Docker Compose (optional, for easier management)
+- Docker installed on your machine
+- Docker account (Docker Hub or GitHub Container Registry)
 - Backend API running at `https://api.example.com`
 - Domain name pointing to your server (e.g., `ui.example.com`)
 
-## Option 1: Docker Compose (Recommended)
+---
 
-### 1. Create `.env` file
+## Part 1: Publish Docker Image
 
+### Option A: Docker Hub
+
+#### 1. Login to Docker Hub
 ```bash
-# Application Configuration
-VITE_APP_NAME=MiniURL
-VITE_APP_DESCRIPTION=Amazon of URL's
-
-# Backend API URL
-VITE_API_URL=https://api.example.com
-
-# UI Port (host mapping)
-UI_PORT=80
+docker login
 ```
 
-### 2. Create `docker-compose.yml`
+#### 2. Build the Image (Cross-Platform: macOS + Linux)
+```bash
+# Build for both AMD64 (Intel) and ARM64 (Apple Silicon / ARM servers)
+docker buildx build --platform linux/amd64,linux/arm64 \
+  --push \
+  --build-arg VITE_APP_NAME=MiniURL \
+  --build-arg VITE_APP_DESCRIPTION="Amazon of URL's" \
+  --build-arg VITE_API_URL=https://api.example.com \
+  -t gallantsuri1/miniurl-ui:v1.0.0 .
+```
 
+> **Note:** The `--push` flag automatically pushes to Docker Hub after building (required for multi-platform images). If you only need your local machine, omit `--platform` and `--push`:
+> ```bash
+> docker build -t gallantsuri1/miniurl-ui:v1.0.0 .
+> ```
+
+#### 3. Verify the Pushed Image
+```bash
+# Check the manifest to see supported platforms
+docker buildx imagetools inspect gallantsuri1/miniurl-ui:v1.0.0
+```
+
+### Option B: GitHub Container Registry (GHCR)
+
+#### 1. Generate a GitHub Personal Access Token
+Go to **Settings → Developer settings → Personal access tokens → Tokens (classic)**
+- Select scopes: `write:packages`, `read:packages`
+- Copy the token
+
+#### 2. Login to GHCR
+```bash
+echo $CR_PAT | docker login ghcr.io -u gallantsuri1 --password-stdin
+```
+
+#### 3. Build and Tag (Cross-Platform)
+```bash
+docker buildx build --platform linux/amd64,linux/arm64 \
+  --push \
+  --build-arg VITE_APP_NAME=MiniURL \
+  --build-arg VITE_APP_DESCRIPTION="Amazon of URL's" \
+  --build-arg VITE_API_URL=https://api.example.com \
+  -t ghcr.io/gallantsuri1/miniurl-ui:v1.0.0 .
+```
+
+#### 4. Verify the Pushed Image
+```bash
+docker buildx imagetools inspect ghcr.io/gallantsuri1/miniurl-ui:v1.0.0
+```
+
+---
+
+## Part 2: Deploy Using Published Image
+
+### Option A: Docker Compose (Recommended)
+
+#### 1. Create `.env` file
+```bash
+# UI Port (host mapping)
+UI_PORT=80
+
+# Override build-time values at runtime (optional)
+VITE_API_URL=https://prod-api.example.com
+```
+
+#### 2. Create `docker-compose.yml`
+
+**For Docker Hub:**
 ```yaml
 version: '3.8'
 
 services:
   miniurl-ui:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        VITE_APP_NAME: ${VITE_APP_NAME:-MiniURL}
-        VITE_APP_DESCRIPTION: ${VITE_APP_DESCRIPTION:-Amazon of URL's}
-        VITE_API_URL: ${VITE_API_URL:-https://api.example.com}
+    image: gallantsuri1/miniurl-ui:v1.0.0
     ports:
       - "${UI_PORT:-80}:80"
+    environment:
+      - VITE_APP_NAME=${VITE_APP_NAME:-MiniURL}
+      - VITE_APP_DESCRIPTION=${VITE_APP_DESCRIPTION:-Amazon of URL's}
+      - VITE_API_URL=${VITE_API_URL:-http://localhost:8080}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
@@ -324,149 +382,148 @@ services:
       start_period: 5s
 ```
 
-### 3. Build and Run
+**For GitHub Container Registry:**
+```yaml
+version: '3.8'
 
-```bash
-# Build and start the container
-docker-compose up -d --build
-
-# Check status
-docker-compose ps
-
-# View logs
-docker-compose logs -f
+services:
+  miniurl-ui:
+    image: gallantsuri1/miniurl-ui:v1.0.0
+    ports:
+      - "${UI_PORT:-80}:80"
+    environment:
+      - VITE_APP_NAME=${VITE_APP_NAME:-MiniURL}
+      - VITE_APP_DESCRIPTION=${VITE_APP_DESCRIPTION:-Amazon of URL's}
+      - VITE_API_URL=${VITE_API_URL:-http://localhost:8080}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
 ```
 
-### 4. Access the Application
+#### 3. Pull and Start
+```bash
+# Pull the image
+docker compose pull
 
-Open your browser and navigate to:
+# Start the container
+docker compose up -d
+```
+
+#### 4. Access the Application
 ```
 http://your-server-ip
 ```
 
-## Option 2: Direct Docker Build
+### Option B: Direct Docker Run
 
-### 1. Build the Docker Image
+No `docker-compose.yml` needed — just run the container directly.
 
-```bash
-docker build \
-  --build-arg VITE_APP_NAME=MiniURL \
-  --build-arg VITE_APP_DESCRIPTION="Amazon of URL's" \
-  --build-arg VITE_API_URL=https://api.example.com \
-  -t miniurl-ui:latest .
-```
-
-### 2. Run the Container
-
+#### 1. Pull and Run
 ```bash
 docker run -d \
   --name miniurl-ui \
   -p 80:80 \
   --restart unless-stopped \
-  miniurl-ui:latest
+  gallantsuri1/miniurl-ui:v1.0.0
 ```
 
-### 3. Verify the Container
+#### 2. Override Environment Variables at Runtime
 
+The image supports runtime environment variable substitution. You can override `VITE_APP_NAME`, `VITE_APP_DESCRIPTION`, and `VITE_API_URL` at container start without rebuilding:
+
+```bash
+docker run -d \
+  --name miniurl-ui \
+  -p 80:80 \
+  -e VITE_APP_NAME="MyCustomApp" \
+  -e VITE_APP_DESCRIPTION="Custom URL Shortener" \
+  -e VITE_API_URL="https://prod-api.example.com" \
+  --restart unless-stopped \
+  gallantsuri1/miniurl-ui:v1.0.0
+```
+
+> **How it works:** The Docker image injects runtime environment variables by creating a `config.js` file at container startup. The app reads `window.__APP_CONFIG__` before falling back to Vite build-time env vars. This means you can **use a single image** across dev, staging, and production by just changing environment variables at runtime — no `sed` on minified JS.
+
+#### 3. Verify
 ```bash
 # Check container status
 docker ps
 
-# View logs
+# View logs (should show substitution confirmation)
 docker logs -f miniurl-ui
 
 # Test health endpoint
 curl http://localhost:80
 ```
 
-## Option 3: Production Deployment with Nginx Reverse Proxy
-
-### 1. Create Docker Compose with Reverse Proxy
-
-```yaml
-version: '3.8'
-
-services:
-  miniurl-ui:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        VITE_APP_NAME: MiniURL
-        VITE_APP_DESCRIPTION: "Amazon of URL's"
-        VITE_API_URL: https://api.example.com
-    restart: unless-stopped
-    networks:
-      - miniurl-network
-
-  nginx-proxy:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx-proxy.conf:/etc/nginx/conf.d/default.conf
-      - ./ssl:/etc/nginx/ssl
-    depends_on:
-      - miniurl-ui
-    restart: unless-stopped
-    networks:
-      - miniurl-network
-
-networks:
-  miniurl-network:
-    driver: bridge
+#### 4. Access the Application
+```
+http://your-server-ip
 ```
 
-### 2. Create Nginx Proxy Configuration (`nginx-proxy.conf`)
+#### 5. Update to New Version
+```bash
+# Stop and remove old container
+docker stop miniurl-ui
+docker rm miniurl-ui
 
-```nginx
-server {
-    listen 80;
-    server_name ui.example.com;
-    
-    # Redirect HTTP to HTTPS
-    return 301 https://$server_name$request_uri;
-}
+# Pull new image
+docker pull gallantsuri1/miniurl-ui:v1.1.0
 
-server {
-    listen 443 ssl http2;
-    server_name ui.example.com;
-
-    ssl_certificate /etc/nginx/ssl/cert.pem;
-    ssl_certificate_key /etc/nginx/ssl/key.pem;
-    ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_ciphers HIGH:!aNULL:!MD5;
-
-    location / {
-        proxy_pass http://miniurl-ui:80;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-}
+# Run with new version
+docker run -d \
+  --name miniurl-ui \
+  -p 80:80 \
+  -e VITE_API_URL="https://prod-api.example.com" \
+  --restart unless-stopped \
+  gallantsuri1/miniurl-ui:v1.1.0
 ```
 
-### 3. Deploy
+---
+
+## Part 3: Versioning & Updates
+
+### Versioning Best Practices
+Use semantic versioning tags instead of `latest` for production:
 
 ```bash
-# Create SSL directory and add certificates
-mkdir -p ssl
-# Add your SSL certificates (cert.pem and key.pem) to ssl/
-
-# Build and start
-docker-compose up -d --build
+# Build with version tag (multi-platform + auto-push)
+docker buildx build --platform linux/amd64,linux/arm64 \
+  --push \
+  --build-arg VITE_APP_NAME=MiniURL \
+  --build-arg VITE_APP_DESCRIPTION="Amazon of URL's" \
+  --build-arg VITE_API_URL=https://api.example.com \
+  -t gallantsuri1/miniurl-ui:1.0.0 \
+  -t gallantsuri1/miniurl-ui:latest .
 ```
+
+### Updating to a New Version
+```bash
+# Update version in docker-compose.yml
+# Then pull and restart
+docker compose pull
+docker compose up -d
+
+# Remove old unused images
+docker image prune -f
+```
+
+---
 
 ## Environment Variables
 
 | Variable | Description | Default | Example |
 |----------|-------------|---------|---------|
-| `VITE_APP_NAME` | Application name displayed in UI | `MiniURL` | `MyURLShortener` |
-| `VITE_APP_DESCRIPTION` | Application subtitle/description | `Amazon of URL's` | `Your URL Shortener` |
-| `VITE_API_URL` | Backend API base URL | `http://localhost:8080` | `https://api.example.com` |
-| `UI_PORT` | Host port mapping (Docker Compose only) | `80` | `3000` |
+| `VITE_APP_NAME` | Application name | `MiniURL` | `MyURLShortener` |
+| `VITE_APP_DESCRIPTION` | Application subtitle | `Amazon of URL's` | `Your URL Shortener` |
+| `VITE_API_URL` | Backend API URL | `http://localhost:8080` | `https://api.example.com` |
+| `UI_PORT` | Host port mapping | `80` | `3000` |
+
+> **How runtime substitution works:** The Docker image creates a `config.js` file at container startup with your environment variables. The app reads `window.__APP_CONFIG__` at runtime, allowing you to **use a single image** across dev, staging, and production — no rebuild or `sed` needed.
 
 ## Production Checklist
 

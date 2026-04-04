@@ -1,16 +1,30 @@
 /**
  * Application Configuration
- * Uses environment variables with sensible defaults
+ * Uses runtime environment variables injected by Docker, with fallback to Vite build-time envs
  */
+
+// Read from Docker-injected runtime config if available
+declare global {
+  interface Window {
+    __APP_CONFIG__?: {
+      VITE_APP_NAME?: string;
+      VITE_APP_DESCRIPTION?: string;
+      VITE_API_URL?: string;
+    };
+  }
+}
+
+const runtimeConfig = typeof window !== 'undefined' ? (window.__APP_CONFIG__ || {}) : {};
+
 export const config = {
   /** Application name displayed in UI */
-  appName: import.meta.env.VITE_APP_NAME || 'MiniURL',
+  appName: runtimeConfig?.VITE_APP_NAME || import.meta.env.VITE_APP_NAME || 'MiniURL',
 
   /** Application description/subtitle */
-  appDescription: import.meta.env.VITE_APP_DESCRIPTION || "Amazon of URL's",
+  appDescription: runtimeConfig?.VITE_APP_DESCRIPTION || import.meta.env.VITE_APP_DESCRIPTION || "Amazon of URL's",
 
   /** Backend API base URL */
-  apiUrl: import.meta.env.VITE_API_URL || 'http://localhost:8080',
+  apiUrl: runtimeConfig?.VITE_API_URL || import.meta.env.VITE_API_URL || 'http://localhost:8080',
 
   /** API endpoints */
   endpoints: {
