@@ -575,6 +575,54 @@ docker-compose ps
 curl http://your-domain/
 ```
 
+---
+
+## CI/CD: Automated Docker Release
+
+The project includes a GitHub Actions workflow that automatically builds and publishes Docker images when you create a release on GitHub.
+
+### Setup (One-Time)
+
+1. Go to your GitHub repo → **Settings → Secrets and variables → Actions**
+2. Add these repository secrets:
+
+   | Secret | Value |
+   |---|---|
+   | `DOCKER_USER` | `gallantsuri1` |
+   | `DOCKER_API_TOKEN` | Your Docker Hub [personal access token](https://app.docker.com/settings/personal-access-tokens) |
+
+### How to Trigger a Release
+
+#### Step 1: Create and push a tag
+```bash
+git tag -a v1.1.0 -m "Release v1.1.0"
+git push origin v1.1.0
+```
+
+#### Step 2: Publish the release on GitHub
+1. Go to your GitHub repository → **Releases** → **Draft a new release**
+2. Select the tag you just pushed (`v1.1.0`)
+3. Fill in the release title and description
+4. Click **Publish release**
+
+> **Important:** The target branch must be `main` or `master` for the workflow to trigger.
+
+#### Step 3: Wait for the workflow
+The GitHub Actions workflow will:
+- ✅ Build multi-platform Docker image (`linux/amd64` + `linux/arm64`)
+- ✅ Push to Docker Hub as `gallantsuri1/miniurl-ui:v1.1.0` and `gallantsuri1/miniurl-ui:latest`
+- ✅ Create a notification issue assigned to you (GitHub emails you automatically)
+
+#### Step 4: Deploy the new version
+```bash
+# On your server
+cd ~/miniurl-ui
+docker compose pull
+docker compose up -d
+```
+
+---
+
 ## Sample Code
 
 ### Java - Send Email Invitation
