@@ -65,6 +65,7 @@ export default function DashboardPage() {
   const [limitsDialogOpen, setLimitsDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [urlToDelete, setUrlToDelete] = useState<number | null>(null);
+  const [creating, setCreating] = useState(false);
 
   // Tooltip states
   const [shortenTooltipOpen, setShortenTooltipOpen] = useState(false);
@@ -121,6 +122,7 @@ export default function DashboardPage() {
     e.preventDefault();
     setError('');
     setLimitError('');
+    setCreating(true);
 
     try {
       const data: CreateUrlRequest = {
@@ -138,7 +140,7 @@ export default function DashboardPage() {
       setTimeout(() => setShortenTooltipOpen(false), 2000);
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || 'Failed to create URL';
-      
+
       // Check if it's a limit error
       if (errorMessage.toLowerCase().includes('limit') || errorMessage.toLowerCase().includes('rate')) {
         setLimitError(errorMessage);
@@ -147,6 +149,8 @@ export default function DashboardPage() {
       } else {
         setError(errorMessage);
       }
+    } finally {
+      setCreating(false);
     }
   };
 
@@ -216,17 +220,21 @@ export default function DashboardPage() {
               <Typography variant="h6" fontWeight={600}>
                 Create Short URL
               </Typography>
-              <InfoIcon
-                onClick={() => setLimitsDialogOpen(true)}
+              <Typography
+                variant="caption"
+                color="text.secondary"
                 sx={{
-                  ml: 1,
-                  color: 'primary.main',
                   cursor: 'pointer',
-                  '&:hover': {
-                    color: 'primary.dark',
-                  },
+                  '&:hover': { color: 'primary.main' },
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 0.25,
+                  ml: 1,
                 }}
-              />
+                onClick={() => setLimitsDialogOpen(true)}
+              >
+                (Limits <InfoIcon sx={{ fontSize: 14 }} />)
+              </Typography>
             </Box>
 
             <form onSubmit={handleCreateUrl}>
@@ -298,10 +306,11 @@ export default function DashboardPage() {
                         type="submit"
                         variant="contained"
                         fullWidth
+                        disabled={creating}
                         startIcon={<AddIcon />}
                         sx={{ height: 56 }}
                       >
-                        Shorten
+                        {creating ? 'Shortening...' : 'Shorten'}
                       </Button>
                     </Tooltip>
                   )}

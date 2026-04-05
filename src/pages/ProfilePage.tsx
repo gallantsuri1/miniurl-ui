@@ -26,6 +26,7 @@ export default function ProfilePage() {
   const { getFeatureName, getDescription } = useFeatures();
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [profileData, setProfileData] = useState<{ createdAt: string; lastLogin: string | null } | null>(null);
 
   const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '' });
   const [originalValues, setOriginalValues] = useState({ firstName: '', lastName: '', email: '' });
@@ -37,6 +38,7 @@ export default function ProfilePage() {
   const loadProfile = async () => {
     try {
       const profile = await profileService.getProfile();
+      setProfileData({ createdAt: profile.createdAt, lastLogin: profile.lastLogin });
       const data = { firstName: profile.firstName || '', lastName: profile.lastName || '', email: profile.email || '' };
       setFormData(data);
       setOriginalValues(data);
@@ -71,13 +73,33 @@ export default function ProfilePage() {
     }
   };
 
+  const formatDate = (dateStr: string | null) => {
+    if (!dateStr) return 'Never';
+    return new Date(dateStr).toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  const formatDateOnly = (dateStr: string | null) => {
+    if (!dateStr) return 'N/A';
+    return new Date(dateStr).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  };
+
   const infoCards = [
     { label: 'Full Name', value: user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : 'Not set' },
     { label: 'Username', value: user?.username || 'N/A' },
     { label: 'Email', value: user?.email || 'N/A' },
     { label: 'Role', value: user?.role?.name || 'USER', chip: true },
-    { label: 'Member Since', value: user?.createdAt ? user.createdAt.substring(0, 10) : 'N/A' },
-    { label: 'Last Login', value: user?.lastLogin ? user.lastLogin.substring(0, 19) : 'Never' },
+    { label: 'Member Since', value: formatDateOnly(profileData?.createdAt ?? null) },
+    { label: 'Last Login', value: formatDate(profileData?.lastLogin ?? null) },
   ];
 
   return (

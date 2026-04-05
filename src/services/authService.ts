@@ -2,11 +2,15 @@ import apiClient from './api';
 import {
   LoginRequest,
   LoginResponse,
+  LoginOtpResponse,
   SignupRequest,
   ForgotPasswordRequest,
   ResetPasswordRequest,
   ChangePasswordRequest,
   DeleteAccountRequest,
+  VerifyOtpRequest,
+  VerifyOtpResponse,
+  ResendOtpRequest,
   ApiResponse,
 } from '../types';
 import config from '../config';
@@ -17,16 +21,47 @@ import config from '../config';
 export const authService = {
   /**
    * Login with username/email and password
-   * API returns: {success: true, message: "...", data: {token: "...", ...}}
+   * Returns either:
+   *   - { otpRequired: true, email, message } when 2FA is enabled
+   *   - { otpRequired: false, token, ... } when 2FA is disabled
    */
-  login: async (credentials: LoginRequest): Promise<LoginResponse> => {
+  login: async (credentials: LoginRequest): Promise<LoginOtpResponse | { otpRequired: false; data: LoginResponse }> => {
     const response = await apiClient.post<ApiResponse>(config.endpoints.login, credentials);
-    // API wraps response in ApiResponse: {success, message, data}
-    const tokenData = response.data.data as LoginResponse;
-    // Store token in localStorage
+    const data = response.data.data;
+
+    // Check if OTP is required
+    if (data.otpRequired) {
+      return {
+        otpRequired: true,
+        email: data.email,
+        message: data.message,
+      } as LoginOtpResponse;
+    }
+
+    // No OTP required — store token and return
+    const tokenData = data as LoginResponse;
+    localStorage.setItem('token', tokenData.token);
+    localStorage.setItem('user', JSON.stringify(tokenData));
+    return { otpRequired: false, data: tokenData };
+  },
+
+  /**
+   * Verify OTP after login when 2FA is enabled
+   */
+  verifyOtp: async (data: VerifyOtpRequest): Promise<VerifyOtpResponse> => {
+    const response = await apiClient.post<ApiResponse>(config.endpoints.verifyOtp, data);
+    const tokenData = response.data.data as VerifyOtpResponse;
     localStorage.setItem('token', tokenData.token);
     localStorage.setItem('user', JSON.stringify(tokenData));
     return tokenData;
+  },
+
+  /**
+   * Resend OTP to user's email
+   */
+  resendOtp: async (data: ResendOtpRequest): Promise<ApiResponse> => {
+    const response = await apiClient.post<ApiResponse>(config.endpoints.resendOtp, data);
+    return response.data;
   },
 
   /**

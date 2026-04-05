@@ -50,23 +50,13 @@ export default function SettingsPage() {
     e.preventDefault();
     setError('');
 
-    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      setError('New passwords do not match');
-      return;
-    }
-
-    if (passwordForm.newPassword.length < 12) {
-      setError('Password must be at least 12 characters');
-      return;
-    }
-
     setLoading(true);
     try {
       const response = await settingsService.changePassword({
         oldPassword: passwordForm.currentPassword,
         newPassword: passwordForm.newPassword,
       });
-      
+
       if (response.success) {
         setSuccess('Password changed successfully');
         setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
@@ -161,8 +151,6 @@ export default function SettingsPage() {
                     value={passwordForm.newPassword}
                     onChange={handlePasswordChange}
                     required
-                    inputProps={{ minLength: 12 }}
-                    helperText="Must be at least 12 characters with uppercase, lowercase, number, and special character"
                   />
                   <TextField
                     fullWidth

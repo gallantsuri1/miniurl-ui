@@ -13,6 +13,7 @@ import SignupPage from './pages/SignupPage';
 import SelfSignupPage from './pages/SelfSignupPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
+import OtpVerifyPage from './pages/OtpVerifyPage';
 import DashboardPage from './pages/DashboardPage';
 import ProfilePage from './pages/ProfilePage';
 import SettingsPage from './pages/SettingsPage';
@@ -181,6 +182,7 @@ function AppContent() {
               />
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
               <Route path="/reset-password" element={<ResetPasswordPage />} />
+              <Route path="/verify-otp" element={<OtpVerifyPage />} />
               <Route path="/no-permission" element={<NoPermissionPage />} />
 
               {/* Protected Routes - controlled by feature flags */}

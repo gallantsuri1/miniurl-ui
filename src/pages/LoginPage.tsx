@@ -62,8 +62,20 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      await login(formData.username, formData.password);
-      // After login, the useEffect will handle redirection based on feature access
+      const otpResult = await login(formData.username, formData.password);
+
+      // If OTP is required, redirect to verification page
+      if (otpResult?.otpRequired) {
+        const message = otpResult.message || '';
+        navigate('/verify-otp', {
+          state: {
+            username: formData.username,
+            email: otpResult.email,
+            alreadySent: message.toLowerCase().includes('already sent'),
+          },
+        });
+      }
+      // If no OTP, the useEffect will handle redirection after isAuthenticated becomes true
     } catch (err: any) {
       console.error('Login error:', err);
       setError(err.response?.data?.message || err.message || 'Invalid username or password');

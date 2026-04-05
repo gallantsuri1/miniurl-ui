@@ -34,6 +34,35 @@ export interface LoginResponse {
   mustChangePassword: boolean;
 }
 
+/** Response when 2FA is enabled — OTP required */
+export interface LoginOtpResponse {
+  otpRequired: true;
+  email: string;
+  message: string;
+}
+
+/** Request body for OTP verification */
+export interface VerifyOtpRequest {
+  username: string;
+  otp: string;
+}
+
+/** Request body for resending OTP */
+export interface ResendOtpRequest {
+  username: string;
+}
+
+/** Response from successful OTP verification (same as LoginResponse) */
+export interface VerifyOtpResponse {
+  token: string;
+  tokenType: string;
+  username: string;
+  userId: number;
+  firstName: string;
+  lastName: string;
+  mustChangePassword: boolean;
+}
+
 export interface SignupRequest {
   firstName: string;
   lastName: string;

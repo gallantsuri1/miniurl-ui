@@ -33,6 +33,8 @@ export const config = {
 
     // Authentication
     login: '/api/auth/login',
+    verifyOtp: '/api/auth/verify-otp',
+    resendOtp: '/api/auth/resend-otp',
     signup: '/api/auth/signup',
     verifyEmailInvite: '/api/auth/verify-email-invite',
     verifyEmail: '/api/auth/verify-email',
