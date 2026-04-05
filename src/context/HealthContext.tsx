@@ -11,8 +11,6 @@ interface HealthContextType {
 
 const HealthContext = createContext<HealthContextType | undefined>(undefined);
 
-const HEALTH_CHECK_INTERVAL = 20000; // 20 seconds
-
 export function HealthProvider({ children }: { children: ReactNode }) {
   const [isHealthy, setIsHealthy] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -41,16 +39,10 @@ export function HealthProvider({ children }: { children: ReactNode }) {
     setIsHealthy(false);
   }, []);
 
-  // Initial health check
+  // Initial health check on mount only - no periodic polling
   useEffect(() => {
     checkHealth();
   }, []);
-
-  // Periodic health check every 10 seconds
-  useEffect(() => {
-    const interval = setInterval(checkHealth, HEALTH_CHECK_INTERVAL);
-    return () => clearInterval(interval);
-  }, [checkHealth]);
 
   const value = {
     isHealthy,

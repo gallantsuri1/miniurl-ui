@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Container, Box, Typography, Paper, CircularProgress, Button } from '@mui/material';
 import { Build as BuildIcon, Refresh as RefreshIcon } from '@mui/icons-material';
 import healthService from '../services/healthService';
@@ -12,35 +12,6 @@ export default function UnderMaintenancePage({ onServiceRestored }: UnderMainten
   const appName = config.appName;
   const [isChecking, setIsChecking] = useState(false);
   const [lastCheck, setLastCheck] = useState<Date | null>(null);
-  const [nextCheck, setNextCheck] = useState<number>(20);
-
-  useEffect(() => {
-    // Countdown timer for next check
-    const countdown = setInterval(() => {
-      setNextCheck((prev) => {
-        if (prev <= 1) {
-          checkHealth();
-          return 20;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(countdown);
-  }, []);
-
-  // Listen for API unavailable events to reset timer
-  useEffect(() => {
-    const handleApiUnavailable = () => {
-      setNextCheck(20);
-    };
-
-    window.addEventListener('api-unavailable', handleApiUnavailable);
-
-    return () => {
-      window.removeEventListener('api-unavailable', handleApiUnavailable);
-    };
-  }, []);
 
   const checkHealth = async () => {
     if (isChecking) return;
@@ -56,13 +27,7 @@ export default function UnderMaintenancePage({ onServiceRestored }: UnderMainten
     } finally {
       setIsChecking(false);
       setLastCheck(new Date());
-      setNextCheck(20);
     }
-  };
-
-  const handleManualCheck = () => {
-    setNextCheck(20);
-    checkHealth();
   };
 
   return (
@@ -142,14 +107,9 @@ export default function UnderMaintenancePage({ onServiceRestored }: UnderMainten
                   </Typography>
                 </Box>
               ) : (
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    Next check in:{' '}
-                    <Typography component="span" fontWeight={600} color="primary">
-                      {nextCheck}s
-                    </Typography>
-                  </Typography>
-                </Box>
+                <Typography variant="body2" color="text.secondary">
+                  The service is currently unavailable. Please try again later.
+                </Typography>
               )}
             </Box>
 
@@ -164,7 +124,7 @@ export default function UnderMaintenancePage({ onServiceRestored }: UnderMainten
             <Button
               variant="outlined"
               startIcon={<RefreshIcon />}
-              onClick={handleManualCheck}
+              onClick={checkHealth}
               disabled={isChecking}
             >
               Check Now

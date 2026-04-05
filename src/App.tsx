@@ -3,7 +3,6 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme, CssBaseline, CircularProgress, Box } from '@mui/material';
 import { AuthProvider } from './context/AuthContext';
 import { FeatureProvider, useFeatures } from './context/FeatureContext';
-import { HealthProvider } from './context/HealthContext';
 import { InitializationProvider, useInitialization } from './context/InitializationContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import SignupGuard from './components/SignupGuard';
@@ -249,11 +248,9 @@ function AppContent() {
 
 function App() {
   return (
-    <HealthProvider>
-      <InitializationProvider>
-        <AppContent />
-      </InitializationProvider>
-    </HealthProvider>
+    <InitializationProvider>
+      <AppContent />
+    </InitializationProvider>
   );
 }
 
