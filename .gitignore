@@ -1,9 +1,9 @@
 # ==========================================
-# MiniURL Monorepo .gitignore
+# MyURL Monorepo .gitignore
 # ==========================================
 
 # ==========================================
-# Build Outputs - MiniURL API (Spring Boot)
+# Build Outputs - MyURL API (Spring Boot)
 # ==========================================
 miniurl-api/target/
 miniurl-api/*.log
@@ -12,7 +12,7 @@ miniurl-api/mvnw
 miniurl-api/mvnw.cmd
 
 # ==========================================
-# Build Outputs - MiniURL UI (Vite/React)
+# Build Outputs - MyURL UI (Vite/React)
 # ==========================================
 miniurl-ui/node_modules/
 miniurl-ui/dist/

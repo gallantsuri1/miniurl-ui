@@ -18,7 +18,7 @@ const runtimeConfig = typeof window !== 'undefined' ? (window.__APP_CONFIG__ || 
 
 export const config = {
   /** Application name displayed in UI */
-  appName: runtimeConfig?.VITE_APP_NAME || import.meta.env.VITE_APP_NAME || 'MiniURL',
+  appName: runtimeConfig?.VITE_APP_NAME || import.meta.env.VITE_APP_NAME || 'MyURL',
 
   /** Application description/subtitle */
   appDescription: runtimeConfig?.VITE_APP_DESCRIPTION || import.meta.env.VITE_APP_DESCRIPTION || "Amazon of URL's",

@@ -1,6 +1,6 @@
-# MiniURL React Frontend
+# MyURL React Frontend
 
-A modern React.js + Material-UI (MUI) frontend for the MiniURL URL shortener application.
+A modern React.js + Material-UI (MUI) frontend for the MyURL URL shortener application.
 
 ## Quick Start
 
@@ -70,14 +70,14 @@ The application will be available at `http://localhost:3000`
 Copy `.env.example` to `.env` and configure:
 
 ```bash
-VITE_APP_NAME=MiniURL
+VITE_APP_NAME=MyURL
 VITE_APP_DESCRIPTION=Amazon of URL's
 VITE_API_URL=http://localhost:8080
 ```
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `VITE_APP_NAME` | Application name displayed in UI | `MiniURL` |
+| `VITE_APP_NAME` | Application name displayed in UI | `MyURL` |
 | `VITE_APP_DESCRIPTION` | Application subtitle/description | `Amazon of URL's` |
 | `VITE_API_URL` | Backend API base URL | `http://localhost:8080` |
 
@@ -350,7 +350,7 @@ docker buildx imagetools inspect ghcr.io/gallantsuri1/miniurl-ui:v1.0.0
 UI_PORT=80
 
 # Runtime environment variables (injected into the container at startup)
-VITE_APP_NAME=MiniURL
+VITE_APP_NAME=MyURL
 VITE_APP_DESCRIPTION=Amazon of URL's
 VITE_API_URL=https://api.suricloud.uk
 ```
@@ -367,7 +367,7 @@ services:
     ports:
       - "${UI_PORT:-80}:80"
     environment:
-      - VITE_APP_NAME=${VITE_APP_NAME:-MiniURL}
+      - VITE_APP_NAME=${VITE_APP_NAME:-MyURL}
       - VITE_APP_DESCRIPTION=${VITE_APP_DESCRIPTION:-Amazon of URL's}
       - VITE_API_URL=${VITE_API_URL:-http://localhost:8080}
     restart: unless-stopped
@@ -389,7 +389,7 @@ services:
     ports:
       - "${UI_PORT:-80}:80"
     environment:
-      - VITE_APP_NAME=${VITE_APP_NAME:-MiniURL}
+      - VITE_APP_NAME=${VITE_APP_NAME:-MyURL}
       - VITE_APP_DESCRIPTION=${VITE_APP_DESCRIPTION:-Amazon of URL's}
       - VITE_API_URL=${VITE_API_URL:-http://localhost:8080}
     restart: unless-stopped
@@ -512,7 +512,7 @@ docker image prune -f
 
 | Variable | Description | Default | Example |
 |----------|-------------|---------|---------|
-| `VITE_APP_NAME` | Application name | `MiniURL` | `MyURLShortener` |
+| `VITE_APP_NAME` | Application name | `MyURL` | `MyURLShortener` |
 | `VITE_APP_DESCRIPTION` | Application subtitle | `Amazon of URL's` | `Your URL Shortener` |
 | `VITE_API_URL` | Backend API URL | `http://localhost:8080` | `https://api.example.com` |
 | `UI_PORT` | Host port mapping | `80` | `3000` |

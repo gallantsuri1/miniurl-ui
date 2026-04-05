@@ -1,4 +1,4 @@
-# Multi-stage Dockerfile for MiniURL UI
+# Multi-stage Dockerfile for MyURL UI
 
 # Build stage
 FROM node:20-alpine AS build
@@ -30,11 +30,11 @@ RUN npm run build
 FROM nginx:alpine
 
 # Add labels
-LABEL maintainer="MiniURL"
-LABEL description="MiniURL URL Shortener - Frontend"
+LABEL maintainer="MyURL"
+LABEL description="MyURL URL Shortener - Frontend"
 
 # Runtime environment variables (can be overridden with docker run -e or docker-compose)
-ENV VITE_APP_NAME="MiniURL"
+ENV VITE_APP_NAME="MyURL"
 ENV VITE_APP_DESCRIPTION="Amazon of URL's"
 ENV VITE_API_URL="http://localhost:8080"
 
