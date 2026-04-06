@@ -17,6 +17,8 @@ import {
   Container,
   Grid,
   CardActionArea,
+  Tooltip,
+  Zoom,
 } from '@mui/material';
 import {
   Save as SaveIcon,
@@ -35,6 +37,7 @@ import { useThemeContext } from '../context/ThemeContext';
 import settingsService from '../services/settingsService';
 import authService from '../services/authService';
 import config from '../config';
+import { validateNewPassword, validatePasswordForDelete } from '../utils/validation';
 
 export default function SettingsPage() {
   const navigate = useNavigate();
@@ -46,16 +49,58 @@ export default function SettingsPage() {
   const [themeLoading, setThemeLoading] = useState(false);
 
   const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
+  const [passwordErrors, setPasswordErrors] = useState<Record<string, string>>({});
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletePassword, setDeletePassword] = useState('');
+  const [deletePasswordError, setDeletePasswordError] = useState('');
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPasswordForm({ ...passwordForm, [e.target.name]: e.target.value });
+    // Clear field error on change
+    if (passwordErrors[e.target.name]) {
+      setPasswordErrors(prev => ({ ...prev, [e.target.name]: '' }));
+    }
+  };
+
+  const handlePasswordBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    let error: string | null = null;
+    switch (name) {
+      case 'newPassword':
+        error = validateNewPassword(value);
+        break;
+      case 'confirmPassword':
+        if (!value) error = 'Please confirm your password';
+        else if (passwordForm.newPassword !== value) error = 'Passwords do not match';
+        break;
+    }
+    if (error) {
+      setPasswordErrors(prev => ({ ...prev, [name]: error }));
+    } else {
+      setPasswordErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const validatePasswordForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
+    const newPasswordError = validateNewPassword(passwordForm.newPassword);
+    if (newPasswordError) newErrors.newPassword = newPasswordError;
+    if (!passwordForm.confirmPassword) {
+      newErrors.confirmPassword = 'Please confirm your password';
+    } else if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    }
+    setPasswordErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmitPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    if (!validatePasswordForm()) {
+      return;
+    }
 
     setLoading(true);
     try {
@@ -94,7 +139,25 @@ export default function SettingsPage() {
     }
   };
 
+  const handleDeletePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDeletePassword(e.target.value);
+    setDeletePasswordError('');
+  };
+
+  const handleDeletePasswordBlur = () => {
+    const error = validatePasswordForDelete(deletePassword);
+    if (error) setDeletePasswordError(error);
+    else setDeletePasswordError('');
+  };
+
   const handleDeleteAccount = async () => {
+    setDeletePasswordError('');
+    const error = validatePasswordForDelete(deletePassword);
+    if (error) {
+      setDeletePasswordError(error);
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await settingsService.deleteAccount({ password: deletePassword });
@@ -223,27 +286,39 @@ export default function SettingsPage() {
                     onChange={handlePasswordChange}
                     required
                   />
-                  <TextField
-                    fullWidth
-                    label="New Password"
-                    name="newPassword"
-                    type="password"
-                    value={passwordForm.newPassword}
-                    onChange={handlePasswordChange}
-                    required
-                  />
-                  <TextField
-                    fullWidth
-                    label="Confirm New Password"
-                    name="confirmPassword"
-                    type="password"
-                    value={passwordForm.confirmPassword}
-                    onChange={handlePasswordChange}
-                    required
-                  />
-                  <Button type="submit" variant="contained" startIcon={<SaveIcon />} disabled={loading} sx={{ alignSelf: 'flex-start' }}>
-                    {loading ? 'Changing...' : 'Change Password'}
-                  </Button>
+                  <Tooltip title={passwordErrors.newPassword || ''} open={!!passwordErrors.newPassword} placement="top" arrow TransitionComponent={Zoom}>
+                    <TextField
+                      fullWidth
+                      label="New Password"
+                      name="newPassword"
+                      type="password"
+                      value={passwordForm.newPassword}
+                      onChange={handlePasswordChange}
+                      onBlur={handlePasswordBlur}
+                      required
+                      error={!!passwordErrors.newPassword}
+                      inputProps={{ maxLength: 255 }}
+                    />
+                  </Tooltip>
+                  <Tooltip title={passwordErrors.confirmPassword || ''} open={!!passwordErrors.confirmPassword} placement="top" arrow TransitionComponent={Zoom}>
+                    <TextField
+                      fullWidth
+                      label="Confirm New Password"
+                      name="confirmPassword"
+                      type="password"
+                      value={passwordForm.confirmPassword}
+                      onChange={handlePasswordChange}
+                      onBlur={handlePasswordBlur}
+                      required
+                      error={!!passwordErrors.confirmPassword}
+                      inputProps={{ maxLength: 255 }}
+                    />
+                  </Tooltip>
+                  <Tooltip title={passwordErrors.newPassword || passwordErrors.confirmPassword || ''} open={!!(passwordErrors.newPassword || passwordErrors.confirmPassword)} placement="top" arrow TransitionComponent={Zoom}>
+                    <Button type="submit" variant="contained" startIcon={<SaveIcon />} disabled={loading || !passwordForm.newPassword || !passwordForm.confirmPassword || passwordForm.newPassword !== passwordForm.confirmPassword} sx={{ alignSelf: 'flex-start' }}>
+                      {loading ? 'Changing...' : 'Change Password'}
+                    </Button>
+                  </Tooltip>
                 </Stack>
               </form>
             </CardContent>
@@ -287,26 +362,33 @@ export default function SettingsPage() {
         </Stack>
 
         {/* Delete Account Dialog */}
-        <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+        <Dialog open={deleteDialogOpen} onClose={() => { setDeleteDialogOpen(false); setDeletePasswordError(''); }}>
           <DialogTitle>Delete Account</DialogTitle>
           <DialogContent sx={{ minWidth: 400 }}>
             <Typography sx={{ mb: 2 }}>
               Are you sure you want to delete your account? This action cannot be undone.
             </Typography>
-            <TextField
-              fullWidth
-              label="Enter your password to confirm"
-              type="password"
-              value={deletePassword}
-              onChange={(e) => setDeletePassword(e.target.value)}
-              required
-            />
+            <Tooltip title={deletePasswordError || ''} open={!!deletePasswordError} placement="top" arrow TransitionComponent={Zoom}>
+              <TextField
+                fullWidth
+                label="Enter your password to confirm"
+                type="password"
+                value={deletePassword}
+                onChange={handleDeletePasswordChange}
+                onBlur={handleDeletePasswordBlur}
+                required
+                error={!!deletePasswordError}
+                inputProps={{ maxLength: 255 }}
+              />
+            </Tooltip>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleDeleteAccount} color="error" variant="contained" disabled={loading || !deletePassword}>
-              {loading ? 'Deleting...' : 'Delete My Account'}
-            </Button>
+            <Button onClick={() => { setDeleteDialogOpen(false); setDeletePasswordError(''); }}>Cancel</Button>
+            <Tooltip title={deletePasswordError || ''} open={!!deletePasswordError} placement="top" arrow TransitionComponent={Zoom}>
+              <Button onClick={handleDeleteAccount} color="error" variant="contained" disabled={loading || !deletePassword || deletePassword.length < 8}>
+                {loading ? 'Deleting...' : 'Delete My Account'}
+              </Button>
+            </Tooltip>
           </DialogActions>
         </Dialog>
 

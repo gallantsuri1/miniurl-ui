@@ -10,13 +10,13 @@ import {
   Link,
   Alert,
   Stack,
+  Tooltip,
+  Zoom,
 } from '@mui/material';
 import { Email as EmailIcon, CheckCircle as CheckCircleIcon } from '@mui/icons-material';
 import authService from '../services/authService';
 import { useFeatures } from '../context/FeatureContext';
-
-// Email validation regex pattern
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+import { validateEmail } from '../utils/validation';
 
 export default function ForgotPasswordPage() {
   const { getAppName, getAppSubtitle } = useFeatures();
@@ -26,9 +26,13 @@ export default function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [emailTouched, setEmailTouched] = useState(false);
 
-  const validateEmail = (value: string): boolean => {
-    if (!value) return false;
-    return EMAIL_PATTERN.test(value);
+  const validateEmailField = (value: string): boolean => {
+    const error = validateEmail(value);
+    if (error) {
+      setError(error);
+      return false;
+    }
+    return true;
   };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,8 +43,8 @@ export default function ForgotPasswordPage() {
   };
 
   const handleBlur = () => {
-    if (emailTouched && email && !validateEmail(email)) {
-      setError('Please enter a valid email address');
+    if (emailTouched) {
+      validateEmailField(email);
     }
   };
 
@@ -48,15 +52,10 @@ export default function ForgotPasswordPage() {
     e.preventDefault();
     setError('');
     setSuccess('');
+    setEmailTouched(true);
 
     // Validate email
-    if (!email) {
-      setError('Email is required');
-      return;
-    }
-
-    if (!validateEmail(email)) {
-      setError('Please enter a valid email address');
+    if (!validateEmailField(email)) {
       return;
     }
 
@@ -164,33 +163,34 @@ export default function ForgotPasswordPage() {
                     Enter your email address and we'll send you a link to reset your password
                   </Typography>
 
-                  <TextField
-                    fullWidth
-                    label="Email Address"
-                    type="email"
-                    value={email}
-                    onChange={handleEmailChange}
-                    onBlur={handleBlur}
-                    required
-                    autoFocus
-                    error={!!error && emailTouched}
-                    helperText={error || 'Enter the email associated with your account'}
-                    InputProps={{
-                      startAdornment: (
-                        <EmailIcon
-                          color={error ? 'error' : 'action'}
-                          sx={{ mr: 1 }}
-                        />
-                      ),
-                    }}
-                  />
+                  <Tooltip title={error || ''} open={!!error && emailTouched} placement="top" arrow TransitionComponent={Zoom}>
+                    <TextField
+                      fullWidth
+                      label="Email Address"
+                      type="email"
+                      value={email}
+                      onChange={handleEmailChange}
+                      onBlur={handleBlur}
+                      required
+                      autoFocus
+                      error={!!error && emailTouched}
+                      InputProps={{
+                        startAdornment: (
+                          <EmailIcon
+                            color={error && emailTouched ? 'error' : 'action'}
+                            sx={{ mr: 1 }}
+                          />
+                        ),
+                      }}
+                    />
+                  </Tooltip>
 
                   <Button
                     type="submit"
                     variant="contained"
                     size="large"
                     fullWidth
-                    disabled={isLoading}
+                    disabled={isLoading || !email}
                     sx={{ py: 1.5 }}
                   >
                     {isLoading ? 'Sending...' : 'Send Reset Link'}

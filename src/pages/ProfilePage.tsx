@@ -13,12 +13,15 @@ import {
   Paper,
   Chip,
   Container,
+  Tooltip,
+  Zoom,
 } from '@mui/material';
 import { Save as SaveIcon, ArrowBack as ArrowBackIcon, Person as PersonIcon } from '@mui/icons-material';
 import Header from '../components/Header';
 import { useFeatures } from '../context/FeatureContext';
 import profileService from '../services/profileService';
 import { useAuth } from '../context/AuthContext';
+import { validateFirstNameOptional, validateLastNameOptional, validateEmailOptional } from '../utils/validation';
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -30,6 +33,8 @@ export default function ProfilePage() {
 
   const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '' });
   const [originalValues, setOriginalValues] = useState({ firstName: '', lastName: '', email: '' });
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     loadProfile();
@@ -48,13 +53,58 @@ export default function ProfilePage() {
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    // Clear field error on change
+    if (fieldErrors[name]) {
+      setFieldErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setTouched(prev => ({ ...prev, [name]: true }));
+
+    let error: string | null = null;
+    switch (name) {
+      case 'firstName':
+        error = validateFirstNameOptional(value);
+        break;
+      case 'lastName':
+        error = validateLastNameOptional(value);
+        break;
+      case 'email':
+        error = validateEmailOptional(value);
+        break;
+    }
+    if (error) {
+      setFieldErrors(prev => ({ ...prev, [name]: error }));
+    } else {
+      setFieldErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const validateProfileForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
+    const firstNameError = validateFirstNameOptional(formData.firstName);
+    if (firstNameError) newErrors.firstName = firstNameError;
+    const lastNameError = validateLastNameOptional(formData.lastName);
+    if (lastNameError) newErrors.lastName = lastNameError;
+    const emailError = validateEmailOptional(formData.email);
+    if (emailError) newErrors.email = emailError;
+    setFieldErrors(newErrors);
+    setTouched({ firstName: true, lastName: true, email: true });
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    
+
+    if (!validateProfileForm()) {
+      return;
+    }
+
     if (formData.firstName === originalValues.firstName && formData.lastName === originalValues.lastName && formData.email === originalValues.email) {
       setError('No changes detected');
       return;
@@ -153,13 +203,19 @@ export default function ProfilePage() {
             <form onSubmit={handleSubmit}>
               <Grid container spacing={3}>
                 <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label="First Name" name="firstName" value={formData.firstName} onChange={handleInputChange} required />
+                  <Tooltip title={fieldErrors.firstName || ''} open={!!fieldErrors.firstName && touched.firstName} placement="top" arrow TransitionComponent={Zoom}>
+                    <TextField fullWidth label="First Name" name="firstName" value={formData.firstName} onChange={handleInputChange} onBlur={handleBlur} error={!!fieldErrors.firstName && touched.firstName} inputProps={{ maxLength: 100 }} />
+                  </Tooltip>
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label="Last Name" name="lastName" value={formData.lastName} onChange={handleInputChange} required />
+                  <Tooltip title={fieldErrors.lastName || ''} open={!!fieldErrors.lastName && touched.lastName} placement="top" arrow TransitionComponent={Zoom}>
+                    <TextField fullWidth label="Last Name" name="lastName" value={formData.lastName} onChange={handleInputChange} onBlur={handleBlur} error={!!fieldErrors.lastName && touched.lastName} inputProps={{ maxLength: 100 }} />
+                  </Tooltip>
                 </Grid>
                 <Grid item xs={12}>
-                  <TextField fullWidth label="Email Address" name="email" type="email" value={formData.email} onChange={handleInputChange} required />
+                  <Tooltip title={fieldErrors.email || ''} open={!!fieldErrors.email && touched.email} placement="top" arrow TransitionComponent={Zoom}>
+                    <TextField fullWidth label="Email Address" name="email" type="email" value={formData.email} onChange={handleInputChange} onBlur={handleBlur} error={!!fieldErrors.email && touched.email} inputProps={{ maxLength: 255 }} />
+                  </Tooltip>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField fullWidth label="Username" value={user?.username || ''} disabled helperText="Username cannot be changed" />

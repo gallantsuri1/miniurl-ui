@@ -13,10 +13,10 @@ import config from '../config';
  */
 export const urlService = {
   /**
-   * Get all URLs for current user with pagination and search
+   * Get all URLs for current user with pagination, sorting, and search
    * API returns: {success, message, data: {content: [...], page, size, totalElements, totalPages, first, last}}
    */
-  getUrls: async (params?: { page?: number; size?: number; search?: string }): Promise<PageResponse<Url>> => {
+  getUrls: async (params?: { page?: number; size?: number; sortBy?: string; sortDirection?: 'asc' | 'desc'; search?: string }): Promise<PageResponse<Url>> => {
     const apiParams: any = {
       page: params?.page || 0,
       size: params?.size || 10,
@@ -24,6 +24,14 @@ export const urlService = {
 
     if (params?.search) {
       apiParams.search = params.search;
+    }
+
+    if (params?.sortBy) {
+      apiParams.sortBy = params.sortBy;
+    }
+
+    if (params?.sortDirection) {
+      apiParams.sortDirection = params.sortDirection;
     }
 
     const response = await apiClient.get<ApiResponse>(config.endpoints.urls, { params: apiParams });

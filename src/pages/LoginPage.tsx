@@ -12,6 +12,8 @@ import {
   InputAdornment,
   IconButton,
   Stack,
+  Tooltip,
+  Zoom,
 } from '@mui/material';
 import {
   Visibility,
@@ -30,6 +32,7 @@ export default function LoginPage() {
     username: '',
     password: '',
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -54,11 +57,35 @@ export default function LoginPage() {
       [e.target.name]: e.target.value,
     });
     setError('');
+    // Clear field error on change
+    if (errors[e.target.name]) {
+      setErrors(prev => ({ ...prev, [e.target.name]: '' }));
+    }
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    if (!value) {
+      setErrors(prev => ({ ...prev, [name]: name === 'username' ? 'Username or email is required' : 'Password is required' }));
+    }
+  };
+
+  const validateLoginForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
+    if (!formData.username) newErrors.username = 'Username or email is required';
+    if (!formData.password) newErrors.password = 'Password is required';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    if (!validateLoginForm()) {
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -133,37 +160,45 @@ export default function LoginPage() {
 
             <form onSubmit={handleSubmit}>
               <Stack spacing={3}>
-                <TextField
-                  fullWidth
-                  label="Username or Email"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  required
-                  autoFocus
-                />
+                <Tooltip title={errors.username || ''} open={!!errors.username} placement="top" arrow TransitionComponent={Zoom}>
+                  <TextField
+                    fullWidth
+                    label="Username or Email"
+                    name="username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    required
+                    autoFocus
+                    error={!!errors.username}
+                  />
+                </Tooltip>
 
-                <TextField
-                  fullWidth
-                  label="Password"
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={() => setShowPassword(!showPassword)}
-                          edge="end"
-                        >
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
+                <Tooltip title={errors.password || ''} open={!!errors.password} placement="top" arrow TransitionComponent={Zoom}>
+                  <TextField
+                    fullWidth
+                    label="Password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={formData.password}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    required
+                    error={!!errors.password}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowPassword(!showPassword)}
+                            edge="end"
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Tooltip>
 
                 <Box sx={{ textAlign: 'right' }}>
                   <Link
@@ -181,7 +216,7 @@ export default function LoginPage() {
                   variant="contained"
                   size="large"
                   fullWidth
-                  disabled={isLoading}
+                  disabled={isLoading || !formData.username || !formData.password}
                   startIcon={<LoginIcon />}
                   sx={{ py: 1.5 }}
                 >

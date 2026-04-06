@@ -44,6 +44,7 @@ import Header from '../components/Header';
 import urlService from '../services/urlService';
 import { useFeatures } from '../context/FeatureContext';
 import { Url, UrlStats, CreateUrlRequest } from '../types';
+import { validateUrl, validateAlias } from '../utils/validation';
 
 export default function DashboardPage() {
   const { isFeatureEnabled, getFeatureName, getDescription } = useFeatures();
@@ -54,6 +55,8 @@ export default function DashboardPage() {
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   const [formData, setFormData] = useState({ url: '', alias: '' });
+  const [urlErrors, setUrlErrors] = useState<Record<string, string>>({});
+  const [urlTouched, setUrlTouched] = useState<Record<string, boolean>>({});
 
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
@@ -111,6 +114,10 @@ export default function DashboardPage() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    // Clear field error on change
+    if (urlErrors[e.target.name]) {
+      setUrlErrors(prev => ({ ...prev, [e.target.name]: '' }));
+    }
     // Clear limit error when user starts typing
     if (limitError) {
       setLimitError('');
@@ -118,10 +125,46 @@ export default function DashboardPage() {
     }
   };
 
+  const handleUrlBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setUrlTouched(prev => ({ ...prev, [name]: true }));
+
+    let error: string | null = null;
+    switch (name) {
+      case 'url':
+        error = validateUrl(value);
+        break;
+      case 'alias':
+        error = validateAlias(value);
+        break;
+    }
+    if (error) {
+      setUrlErrors(prev => ({ ...prev, [name]: error }));
+    } else {
+      setUrlErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const validateUrlForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
+    const urlError = validateUrl(formData.url);
+    if (urlError) newErrors.url = urlError;
+    const aliasError = validateAlias(formData.alias);
+    if (aliasError) newErrors.alias = aliasError;
+    setUrlErrors(newErrors);
+    setUrlTouched({ url: true, alias: true });
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleCreateUrl = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLimitError('');
+
+    if (!validateUrlForm()) {
+      return;
+    }
+
     setCreating(true);
 
     try {
@@ -243,8 +286,8 @@ export default function DashboardPage() {
               <Grid container spacing={2} alignItems="flex-end">
                 <Grid item xs={12} md={7}>
                   <Tooltip
-                    title={limitError || error || ''}
-                    open={!!(limitError || error) && limitTooltipOpen}
+                    title={limitError || error || urlErrors.url || ''}
+                    open={((!!limitError || !!error) && limitTooltipOpen) || (!!urlErrors.url && urlTouched.url)}
                     TransitionComponent={Zoom}
                     placement="top"
                     arrow
@@ -264,20 +307,22 @@ export default function DashboardPage() {
                       name="url"
                       value={formData.url}
                       onChange={handleInputChange}
+                      onBlur={handleUrlBlur}
                       placeholder="https://example.com/very/long/url"
                       required
                       type="url"
-                      error={!!limitError || !!error}
+                      error={!!(urlErrors.url && urlTouched.url) || !!limitError || !!error}
+                      inputProps={{ maxLength: 2000 }}
                       sx={{
                         '& .MuiOutlinedInput-root': {
                           '& fieldset': {
-                            borderColor: (limitError || error) ? 'error.main' : undefined,
+                            borderColor: (limitError || error || (urlErrors.url && urlTouched.url)) ? 'error.main' : undefined,
                           },
                           '&:hover fieldset': {
-                            borderColor: (limitError || error) ? 'error.main' : undefined,
+                            borderColor: (limitError || error || (urlErrors.url && urlTouched.url)) ? 'error.main' : undefined,
                           },
                           '&.Mui-focused fieldset': {
-                            borderColor: (limitError || error) ? 'error.main' : undefined,
+                            borderColor: (limitError || error || (urlErrors.url && urlTouched.url)) ? 'error.main' : undefined,
                           },
                         },
                       }}
@@ -285,15 +330,19 @@ export default function DashboardPage() {
                   </Tooltip>
                 </Grid>
                 <Grid item xs={12} md={3}>
-                  <TextField
-                    fullWidth
-                    label="Custom Alias (optional)"
-                    name="alias"
-                    value={formData.alias}
-                    onChange={handleInputChange}
-                    placeholder="my-link"
-                    inputProps={{ minLength: 3 }}
-                  />
+                  <Tooltip title={urlErrors.alias || ''} open={!!urlErrors.alias && urlTouched.alias} placement="top" arrow TransitionComponent={Zoom}>
+                    <TextField
+                      fullWidth
+                      label="Custom Alias (optional)"
+                      name="alias"
+                      value={formData.alias}
+                      onChange={handleInputChange}
+                      onBlur={handleUrlBlur}
+                      placeholder="my-link"
+                      error={!!urlErrors.alias && urlTouched.alias}
+                      inputProps={{ minLength: 3, maxLength: 10 }}
+                    />
+                  </Tooltip>
                 </Grid>
                 <Grid item xs={12} md={2}>
                   {isFeatureEnabled('URL_SHORTENING') && (
@@ -308,7 +357,7 @@ export default function DashboardPage() {
                         type="submit"
                         variant="contained"
                         fullWidth
-                        disabled={creating}
+                        disabled={creating || !formData.url}
                         startIcon={<AddIcon />}
                         sx={{ height: 56 }}
                       >

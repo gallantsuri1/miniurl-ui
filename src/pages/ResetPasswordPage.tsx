@@ -13,6 +13,8 @@ import {
   CircularProgress,
   InputAdornment,
   IconButton,
+  Tooltip,
+  Zoom,
 } from '@mui/material';
 import {
   Visibility,
@@ -21,6 +23,7 @@ import {
 } from '@mui/icons-material';
 import authService from '../services/authService';
 import { useFeatures } from '../context/FeatureContext';
+import { validateNewPassword } from '../utils/validation';
 
 export default function ResetPasswordPage() {
   const { getAppName } = useFeatures();
@@ -39,6 +42,7 @@ export default function ResetPasswordPage() {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -81,17 +85,34 @@ export default function ResetPasswordPage() {
     }
   };
 
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setTouched(prev => ({ ...prev, [name]: true }));
+
+    let error: string | null = null;
+    switch (name) {
+      case 'password':
+        error = validateNewPassword(value);
+        break;
+      case 'confirmPassword':
+        if (!value) error = 'Please confirm your password';
+        else if (formData.password !== value) error = 'Passwords do not match';
+        break;
+    }
+
+    if (error) {
+      setErrors(prev => ({ ...prev, [name]: error }));
+    } else {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    // Password validation
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-    }
+    const passwordError = validateNewPassword(formData.password);
+    if (passwordError) newErrors.password = passwordError;
 
-    // Confirm password
     if (!formData.confirmPassword) {
       newErrors.confirmPassword = 'Please confirm your password';
     } else if (formData.password !== formData.confirmPassword) {
@@ -99,6 +120,7 @@ export default function ResetPasswordPage() {
     }
 
     setErrors(newErrors);
+    setTouched({ password: true, confirmPassword: true });
     return Object.keys(newErrors).length === 0;
   };
 
@@ -124,6 +146,15 @@ export default function ResetPasswordPage() {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const isFormValid = (): boolean => {
+    return (
+      formData.password.length >= 8 &&
+      formData.confirmPassword.length >= 1 &&
+      formData.password === formData.confirmPassword &&
+      !Object.values(errors).some(e => e)
+    );
   };
 
   // Show verification loading
@@ -353,54 +384,60 @@ export default function ResetPasswordPage() {
                 </Typography>
 
                 {/* Password */}
-                <TextField
-                  fullWidth
-                  label="New Password *"
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  error={!!errors.password}
-                  helperText={errors.password}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={() => setShowPassword(!showPassword)}
-                          edge="end"
-                        >
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
+                <Tooltip title={errors.password || ''} open={!!errors.password && touched.password} placement="top" arrow TransitionComponent={Zoom}>
+                  <TextField
+                    fullWidth
+                    label="New Password *"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={formData.password}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    required
+                    error={!!errors.password && touched.password}
+                    inputProps={{ maxLength: 255 }}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowPassword(!showPassword)}
+                            edge="end"
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Tooltip>
 
                 {/* Confirm Password */}
-                <TextField
-                  fullWidth
-                  label="Confirm Password *"
-                  name="confirmPassword"
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  required
-                  error={!!errors.confirmPassword}
-                  helperText={errors.confirmPassword}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                          edge="end"
-                        >
-                          {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
+                <Tooltip title={errors.confirmPassword || ''} open={!!errors.confirmPassword && touched.confirmPassword} placement="top" arrow TransitionComponent={Zoom}>
+                  <TextField
+                    fullWidth
+                    label="Confirm Password *"
+                    name="confirmPassword"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    required
+                    error={!!errors.confirmPassword && touched.confirmPassword}
+                    inputProps={{ maxLength: 255 }}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            edge="end"
+                          >
+                            {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Tooltip>
 
                 {/* Submit Button */}
                 <Button
@@ -408,7 +445,7 @@ export default function ResetPasswordPage() {
                   variant="contained"
                   size="large"
                   fullWidth
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !isFormValid()}
                   sx={{ py: 1.5, mt: 2 }}
                 >
                   {isSubmitting ? 'Resetting Password...' : 'Reset Password'}

@@ -13,6 +13,8 @@ import {
   IconButton,
   Stack,
   CircularProgress,
+  Tooltip,
+  Zoom,
 } from '@mui/material';
 import {
   Visibility,
@@ -21,6 +23,7 @@ import {
 } from '@mui/icons-material';
 import authService from '../services/authService';
 import { useFeatures } from '../context/FeatureContext';
+import { validateFirstName, validateLastName, validateUsername, validatePassword } from '../utils/validation';
 
 export default function SignupPage() {
   const { getAppName } = useFeatures();
@@ -42,6 +45,7 @@ export default function SignupPage() {
   });
   
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -74,7 +78,7 @@ export default function SignupPage() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
+
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
@@ -84,42 +88,72 @@ export default function SignupPage() {
     }
   };
 
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-    
-    // Username validation (3-50 chars)
-    if (!formData.username) {
-      newErrors.username = 'Username is required';
-    } else if (formData.username.length < 3) {
-      newErrors.username = 'Username must be at least 3 characters';
-    } else if (formData.username.length > 50) {
-      newErrors.username = 'Username must be less than 50 characters';
-    }
-    
-    // Password validation (required only)
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setTouched(prev => ({ ...prev, [name]: true }));
+
+    let error: string | null = null;
+    switch (name) {
+      case 'firstName':
+        error = validateFirstName(value);
+        break;
+      case 'lastName':
+        error = validateLastName(value);
+        break;
+      case 'username':
+        error = validateUsername(value);
+        break;
+      case 'password':
+        error = validatePassword(value);
+        break;
+      case 'confirmPassword':
+        if (!value) error = 'Please confirm your password';
+        else if (formData.password !== value) error = 'Passwords do not match';
+        break;
     }
 
-    // Confirm password
-    if (formData.password !== formData.confirmPassword) {
+    if (error) {
+      setErrors(prev => ({ ...prev, [name]: error }));
+    } else {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    const firstNameError = validateFirstName(formData.firstName);
+    if (firstNameError) newErrors.firstName = firstNameError;
+
+    const lastNameError = validateLastName(formData.lastName);
+    if (lastNameError) newErrors.lastName = lastNameError;
+
+    const usernameError = validateUsername(formData.username);
+    if (usernameError) newErrors.username = usernameError;
+
+    const passwordError = validatePassword(formData.password);
+    if (passwordError) newErrors.password = passwordError;
+
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = 'Please confirm your password';
+    } else if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
-    
+
     setIsSubmitting(true);
     setSubmitError('');
-    
+
     try {
       await authService.signup({
         firstName: formData.firstName,
@@ -128,13 +162,28 @@ export default function SignupPage() {
         password: formData.password,
         invitationToken: inviteToken,
       });
-      
+
       setSuccess(true);
     } catch (err: any) {
       setSubmitError(err.response?.data?.message || 'Registration failed. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const isFormValid = (): boolean => {
+    return (
+      formData.firstName.trim().length >= 1 &&
+      formData.firstName.length <= 100 &&
+      formData.lastName.trim().length >= 1 &&
+      formData.lastName.length <= 100 &&
+      formData.username.length >= 3 &&
+      formData.username.length <= 50 &&
+      formData.password.length >= 8 &&
+      formData.confirmPassword.length >= 1 &&
+      formData.password === formData.confirmPassword &&
+      !Object.values(errors).some(e => e)
+    );
   };
 
   // Show verification loading
@@ -301,91 +350,104 @@ export default function SignupPage() {
               <Stack spacing={3}>
                 {/* Name Fields */}
                 <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                  <TextField
-                    fullWidth
-                    label="First Name *"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    required
-                    error={!!errors.firstName}
-                    helperText={errors.firstName}
-                  />
-                  <TextField
-                    fullWidth
-                    label="Last Name *"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    required
-                    error={!!errors.lastName}
-                    helperText={errors.lastName}
-                  />
+                  <Tooltip title={errors.firstName || ''} open={!!errors.firstName && touched.firstName} placement="top" arrow TransitionComponent={Zoom}>
+                    <TextField
+                      fullWidth
+                      label="First Name *"
+                      name="firstName"
+                      value={formData.firstName}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      required
+                      error={!!errors.firstName && touched.firstName}
+                      inputProps={{ maxLength: 100 }}
+                    />
+                  </Tooltip>
+                  <Tooltip title={errors.lastName || ''} open={!!errors.lastName && touched.lastName} placement="top" arrow TransitionComponent={Zoom}>
+                    <TextField
+                      fullWidth
+                      label="Last Name *"
+                      name="lastName"
+                      value={formData.lastName}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      required
+                      error={!!errors.lastName && touched.lastName}
+                      inputProps={{ maxLength: 100 }}
+                    />
+                  </Tooltip>
                 </Stack>
 
                 {/* Username */}
-                <TextField
-                  fullWidth
-                  label="Username *"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  required
-                  error={!!errors.username}
-                  helperText={errors.username}
-                  placeholder="johndoe"
-                  inputProps={{ minLength: 3, maxLength: 50 }}
-                />
+                <Tooltip title={errors.username || ''} open={!!errors.username && touched.username} placement="top" arrow TransitionComponent={Zoom}>
+                  <TextField
+                    fullWidth
+                    label="Username *"
+                    name="username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    required
+                    error={!!errors.username && touched.username}
+                    placeholder="johndoe"
+                    inputProps={{ minLength: 3, maxLength: 50 }}
+                  />
+                </Tooltip>
 
                 {/* Password */}
-                <TextField
-                  fullWidth
-                  label="Password *"
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  error={!!errors.password}
-                  helperText={errors.password}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={() => setShowPassword(!showPassword)}
-                          edge="end"
-                        >
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
+                <Tooltip title={errors.password || ''} open={!!errors.password && touched.password} placement="top" arrow TransitionComponent={Zoom}>
+                  <TextField
+                    fullWidth
+                    label="Password *"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={formData.password}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    required
+                    error={!!errors.password && touched.password}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowPassword(!showPassword)}
+                            edge="end"
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                    inputProps={{ maxLength: 255 }}
+                  />
+                </Tooltip>
 
                 {/* Confirm Password */}
-                <TextField
-                  fullWidth
-                  label="Confirm Password *"
-                  name="confirmPassword"
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  required
-                  error={!!errors.confirmPassword}
-                  helperText={errors.confirmPassword}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                          edge="end"
-                        >
-                          {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
+                <Tooltip title={errors.confirmPassword || ''} open={!!errors.confirmPassword && touched.confirmPassword} placement="top" arrow TransitionComponent={Zoom}>
+                  <TextField
+                    fullWidth
+                    label="Confirm Password *"
+                    name="confirmPassword"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    required
+                    error={!!errors.confirmPassword && touched.confirmPassword}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            edge="end"
+                          >
+                            {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Tooltip>
 
                 {/* Submit Button */}
                 <Button
@@ -393,7 +455,7 @@ export default function SignupPage() {
                   variant="contained"
                   size="large"
                   fullWidth
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !isFormValid()}
                   sx={{ py: 1.5, mt: 2 }}
                 >
                   {isSubmitting ? 'Creating Account...' : 'Create Account'}
