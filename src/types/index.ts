@@ -31,7 +31,6 @@ export interface LoginResponse {
   userId: number;
   firstName: string;
   lastName: string;
-  mustChangePassword: boolean;
 }
 
 /** Response when 2FA is enabled — OTP required */
@@ -60,7 +59,6 @@ export interface VerifyOtpResponse {
   userId: number;
   firstName: string;
   lastName: string;
-  mustChangePassword: boolean;
 }
 
 export interface SignupRequest {
@@ -78,11 +76,6 @@ export interface ForgotPasswordRequest {
 
 export interface ResetPasswordRequest {
   token: string;
-  newPassword: string;
-}
-
-export interface ChangePasswordRequest {
-  oldPassword: string;
   newPassword: string;
 }
 

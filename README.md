@@ -51,7 +51,7 @@ The application will be available at `http://localhost:3000`
 |------|-------|--------------|-------------|
 | Dashboard | `/dashboard` | `DASHBOARD` | Create and manage shortened URLs with pagination, search, and sorting |
 | Profile | `/profile` | `PROFILE_PAGE` | View and edit profile information |
-| Settings | `/settings` | `SETTINGS_PAGE` | Change password, export data, delete account |
+| Settings | `/settings` | `SETTINGS_PAGE` | Manage theme appearance, export data, delete account |
 
 ### Admin Pages (Feature-Gated)
 | Page | Route | Feature Flag | Description |
@@ -233,9 +233,12 @@ src/
 
 ### 9. Password Reset
 - Forgot password page with email input
-- Reset password page with token validation
-- New password with confirmation
+- Calls `/api/auth/forgot-password` to send reset link via email
+- Reset password page with token validation (from email link)
+- Calls `/api/auth/reset-password` with new password + confirmation
 - Success confirmation with sign-in link
+
+> **Note:** Password changes are handled exclusively through the email-based reset flow. There is no in-app "change password" feature. Users who need a new password should use the "Forgot Password" link on the login page.
 
 ## Scripts
 

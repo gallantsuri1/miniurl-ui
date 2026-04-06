@@ -83,14 +83,7 @@ export default function UnderMaintenancePage({ onServiceRestored }: UnderMainten
               Under Maintenance
             </Typography>
 
-            {/* Description */}
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-              We're currently experiencing technical difficulties.
-              <br />
-              Please check back shortly.
-            </Typography>
-
-            {/* Status Indicator */}
+            {/* Desc*/}
             <Box
               sx={{
                 p: 2,
@@ -108,7 +101,9 @@ export default function UnderMaintenancePage({ onServiceRestored }: UnderMainten
                 </Box>
               ) : (
                 <Typography variant="body2" color="text.secondary">
-                  The service is currently unavailable. Please try again later.
+                  We're currently experiencing technical difficulties.
+                  <br />
+                  Please check back shortly.
                 </Typography>
               )}
             </Box>

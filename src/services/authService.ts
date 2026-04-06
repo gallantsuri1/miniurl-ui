@@ -6,7 +6,6 @@ import {
   SignupRequest,
   ForgotPasswordRequest,
   ResetPasswordRequest,
-  ChangePasswordRequest,
   DeleteAccountRequest,
   VerifyOtpRequest,
   VerifyOtpResponse,
@@ -115,26 +114,10 @@ export const authService = {
   },
 
   /**
-   * Change password (authenticated)
-   */
-  changePassword: async (data: ChangePasswordRequest): Promise<ApiResponse> => {
-    const response = await apiClient.post<ApiResponse>(config.endpoints.changePassword, data);
-    return response.data;
-  },
-
-  /**
    * Delete account
    */
   deleteAccount: async (data: DeleteAccountRequest): Promise<ApiResponse> => {
     const response = await apiClient.post<ApiResponse>(config.endpoints.deleteAccount, data);
-    return response.data;
-  },
-
-  /**
-   * Check if password change is required
-   */
-  checkPasswordChange: async (): Promise<ApiResponse> => {
-    const response = await apiClient.get<ApiResponse>(config.endpoints.checkPasswordChange);
     return response.data;
   },
 

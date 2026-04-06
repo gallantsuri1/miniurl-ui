@@ -212,7 +212,7 @@ export const validatePasswordForDelete = (value: string): string | null => {
 };
 
 /**
- * Validate password for reset (min 8 chars, field name is "newPassword")
+ * Validate new password (min 8 chars) — used by Reset Password form
  */
 export const validateNewPassword = (value: string): string | null => {
   if (!value) return 'New password is required';

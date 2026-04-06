@@ -40,10 +40,8 @@ export const config = {
     verifyEmail: '/api/auth/verify-email',
     forgotPassword: '/api/auth/forgot-password',
     resetPassword: '/api/auth/reset-password',
-    changePassword: '/api/auth/change-password',
     deleteAccount: '/api/auth/delete-account',
     activateEmail: '/api/auth/activate-email',
-    checkPasswordChange: '/api/auth/check-password-change',
 
     // Self Invitation
     selfInviteSend: '/api/self-invite/send',
@@ -57,7 +55,6 @@ export const config = {
     profile: '/api/profile',
 
     // Settings
-    settingsChangePassword: '/api/settings/change-password',
     settingsExport: '/api/settings/export',
     settingsDeleteAccount: '/api/settings/delete-account',
 
