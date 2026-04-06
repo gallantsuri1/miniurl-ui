@@ -85,7 +85,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   /** Common post-login steps: fetch profile, features, set user state */
   const completeLogin = async (username: string) => {
-    // Fetch profile to get role information
+    // Fetch profile to get role information and theme
     const profile = await profileService.getProfile();
 
     // Fetch feature flags for this user
@@ -93,6 +93,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Dispatch event to notify FeatureContext
     window.dispatchEvent(new CustomEvent('features-loaded', { detail: features }));
+
+    // Sync theme from profile API if available
+    if (profile?.theme) {
+      window.dispatchEvent(new CustomEvent('profile-theme', { detail: profile.theme }));
+    }
 
     const userData = {
       id: profile.id,

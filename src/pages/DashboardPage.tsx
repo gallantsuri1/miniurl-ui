@@ -144,11 +144,13 @@ export default function DashboardPage() {
       // Check if it's a limit error
       if (errorMessage.toLowerCase().includes('limit') || errorMessage.toLowerCase().includes('rate')) {
         setLimitError(errorMessage);
-        setLimitTooltipOpen(true);
-        setTimeout(() => setLimitTooltipOpen(false), 5000);
-      } else {
-        setError(errorMessage);
       }
+      setError(errorMessage);
+      setLimitTooltipOpen(true);
+      setTimeout(() => {
+        setLimitTooltipOpen(false);
+        setLimitError('');
+      }, 5000);
     } finally {
       setCreating(false);
     }
@@ -241,8 +243,8 @@ export default function DashboardPage() {
               <Grid container spacing={2} alignItems="flex-end">
                 <Grid item xs={12} md={7}>
                   <Tooltip
-                    title={limitError || 'Limit reached'}
-                    open={limitTooltipOpen}
+                    title={limitError || error || ''}
+                    open={!!(limitError || error) && limitTooltipOpen}
                     TransitionComponent={Zoom}
                     placement="top"
                     arrow
@@ -265,17 +267,17 @@ export default function DashboardPage() {
                       placeholder="https://example.com/very/long/url"
                       required
                       type="url"
-                      error={!!limitError}
+                      error={!!limitError || !!error}
                       sx={{
                         '& .MuiOutlinedInput-root': {
                           '& fieldset': {
-                            borderColor: limitError ? 'error.main' : undefined,
+                            borderColor: (limitError || error) ? 'error.main' : undefined,
                           },
                           '&:hover fieldset': {
-                            borderColor: limitError ? 'error.main' : undefined,
+                            borderColor: (limitError || error) ? 'error.main' : undefined,
                           },
                           '&.Mui-focused fieldset': {
-                            borderColor: limitError ? 'error.main' : undefined,
+                            borderColor: (limitError || error) ? 'error.main' : undefined,
                           },
                         },
                       }}

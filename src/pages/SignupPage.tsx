@@ -144,9 +144,12 @@ export default function SignupPage() {
         sx={{
           minHeight: '100vh',
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
-          bgcolor: 'grey.100',
+          justifyContent: 'flex-start',
+          bgcolor: 'background.default',
+          py: 6,
+          pt: { xs: 8, sm: 10 },
         }}
       >
         <Paper elevation={3} sx={{ p: 4, textAlign: 'center' }}>
@@ -164,10 +167,12 @@ export default function SignupPage() {
         sx={{
           minHeight: '100vh',
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
-          bgcolor: 'grey.100',
-          py: 4,
+          justifyContent: 'flex-start',
+          bgcolor: 'background.default',
+          py: 6,
+          pt: { xs: 8, sm: 10 },
         }}
       >
         <Container maxWidth="sm">
@@ -204,10 +209,12 @@ export default function SignupPage() {
         sx={{
           minHeight: '100vh',
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
-          bgcolor: 'grey.100',
-          py: 4,
+          justifyContent: 'flex-start',
+          bgcolor: 'background.default',
+          py: 6,
+          pt: { xs: 8, sm: 10 },
         }}
       >
         <Container maxWidth="sm">
@@ -245,10 +252,12 @@ export default function SignupPage() {
       sx={{
         minHeight: '100vh',
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
-        bgcolor: 'grey.100',
-        py: 4,
+        justifyContent: 'flex-start',
+        bgcolor: 'background.default',
+        py: 6,
+        pt: { xs: 8, sm: 10 },
       }}
     >
       <Container maxWidth="sm">

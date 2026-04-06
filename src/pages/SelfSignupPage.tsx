@@ -88,10 +88,12 @@ export default function SelfSignupPage() {
         sx={{
           minHeight: '100vh',
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
+          justifyContent: 'flex-start',
           bgcolor: 'background.default',
-          py: 4,
+          py: 6,
+          pt: { xs: 8, sm: 10 },
         }}
       >
         <Container maxWidth="sm">
@@ -128,10 +130,12 @@ export default function SelfSignupPage() {
       sx={{
         minHeight: '100vh',
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         bgcolor: 'background.default',
-        py: 4,
+        py: 6,
+        pt: { xs: 8, sm: 10 },
       }}
     >
       <Container maxWidth="sm">

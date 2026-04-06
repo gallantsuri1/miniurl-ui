@@ -52,6 +52,23 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     loadTheme();
   }, []);
 
+  // Listen for theme sync from profile API after login
+  useEffect(() => {
+    const handleProfileTheme = (event: CustomEvent<string>) => {
+      const themeFromProfile = event.detail.toUpperCase();
+      if (themes.find(t => t.name === themeFromProfile)) {
+        setThemeName(themeFromProfile);
+        localStorage.setItem(THEME_STORAGE_KEY, themeFromProfile);
+      }
+    };
+
+    window.addEventListener('profile-theme', handleProfileTheme as EventListener);
+
+    return () => {
+      window.removeEventListener('profile-theme', handleProfileTheme as EventListener);
+    };
+  }, []);
+
   const setTheme = async (name: string) => {
     const upperName = name.toUpperCase();
     if (!themes.find(t => t.name === upperName)) return;
