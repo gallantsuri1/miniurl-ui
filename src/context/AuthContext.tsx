@@ -27,29 +27,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Check if user is authenticated on mount
     const initAuth = async () => {
       const token = localStorage.getItem('token');
-      const userStr = localStorage.getItem('user');
 
-      if (token && userStr) {
-        try {
-          const userData = JSON.parse(userStr);
-          setUser({
-            id: userData.userId || userData.id,
-            username: userData.username,
-            email: userData.email || '',
-            firstName: userData.firstName || '',
-            lastName: userData.lastName || '',
-            role: userData.role || { id: 2, name: 'USER' },
-            status: 'ACTIVE',
-            createdAt: new Date().toISOString(),
-            lastLogin: userData.lastLogin || null,
-          });
-          // Features are already loaded by InitializationContext, no need to fetch again
-        } catch (e) {
-          console.error('Error parsing user data:', e);
-          authService.logout();
-        }
+      if (token) {
+        // User data will be fetched via completeLogin() by InitializationContext
+        // No localStorage cache — kept in React state only
+        setIsLoading(false);
+      } else {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
 
     initAuth();
@@ -115,7 +100,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
+    // User data kept in React state only — never persisted to localStorage
   };
 
   const resendOtp = async (username: string) => {
@@ -150,7 +135,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (user) {
       const updatedUser = { ...user, ...userData };
       setUser(updatedUser);
-      localStorage.setItem('user', JSON.stringify(updatedUser));
     }
   };
 

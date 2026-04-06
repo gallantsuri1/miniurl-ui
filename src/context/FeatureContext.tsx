@@ -74,7 +74,6 @@ export function FeatureProvider({ children }: { children: ReactNode }) {
       if (err.response?.status === 401) {
         featuresCache = null;
         localStorage.removeItem('token');
-        localStorage.removeItem('user');
       }
     } finally {
       setIsLoading(false);

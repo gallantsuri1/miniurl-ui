@@ -52,7 +52,6 @@ apiClient.interceptors.response.use(
       if (token) {
         // Authenticated session got 401 - token is invalid/expired
         localStorage.removeItem('token');
-        localStorage.removeItem('user');
         window.location.href = '/login';
       }
       // No token stored - just pass the error through (public pages like forgot-password)

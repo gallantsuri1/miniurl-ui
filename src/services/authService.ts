@@ -40,7 +40,6 @@ export const authService = {
     // No OTP required — store token and return
     const tokenData = data as LoginResponse;
     localStorage.setItem('token', tokenData.token);
-    localStorage.setItem('user', JSON.stringify(tokenData));
     return { otpRequired: false, data: tokenData };
   },
 
@@ -51,7 +50,6 @@ export const authService = {
     const response = await apiClient.post<ApiResponse>(config.endpoints.verifyOtp, data);
     const tokenData = response.data.data as VerifyOtpResponse;
     localStorage.setItem('token', tokenData.token);
-    localStorage.setItem('user', JSON.stringify(tokenData));
     return tokenData;
   },
 
@@ -68,7 +66,6 @@ export const authService = {
    */
   logout: () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('user');
   },
 
   /**
@@ -76,17 +73,6 @@ export const authService = {
    */
   isAuthenticated: (): boolean => {
     return !!localStorage.getItem('token');
-  },
-
-  /**
-   * Get current user from localStorage
-   */
-  getCurrentUser: () => {
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-      return JSON.parse(userStr);
-    }
-    return null;
   },
 
   /**

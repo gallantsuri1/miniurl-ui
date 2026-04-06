@@ -98,7 +98,6 @@ export function InitializationProvider({ children }: { children: ReactNode }) {
           if (err.response?.status === 401) {
             console.log('[Initialization] Token invalid, clearing...');
             localStorage.removeItem('token');
-            localStorage.removeItem('user');
             setIsAuthenticated(false);
           } else {
             throw err;
