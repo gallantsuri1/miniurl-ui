@@ -125,6 +125,10 @@ export interface ProfileUpdateRequest {
   email: string;
 }
 
+export interface UpdateThemeRequest {
+  theme: string;
+}
+
 // Admin types
 export interface AdminUser {
   id: number;

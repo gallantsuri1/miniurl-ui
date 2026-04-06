@@ -103,7 +103,7 @@ export default function ProfilePage() {
   ];
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'grey.100' }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       <Header />
       
       <Container maxWidth="xl" sx={{ py: 4 }}>

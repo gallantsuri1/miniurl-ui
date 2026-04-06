@@ -1,6 +1,7 @@
 import apiClient from './api';
 import {
   ProfileUpdateRequest,
+  UpdateThemeRequest,
   ApiResponse,
 } from '../types';
 import config from '../config';
@@ -21,6 +22,14 @@ export const profileService = {
    * Update user profile
    */
   updateProfile: async (data: ProfileUpdateRequest): Promise<ApiResponse> => {
+    const response = await apiClient.put<ApiResponse>(config.endpoints.profile, data);
+    return response.data;
+  },
+
+  /**
+   * Update user theme preference
+   */
+  updateTheme: async (data: UpdateThemeRequest): Promise<ApiResponse> => {
     const response = await apiClient.put<ApiResponse>(config.endpoints.profile, data);
     return response.data;
   },

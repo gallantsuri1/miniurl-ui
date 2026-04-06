@@ -37,7 +37,7 @@ export default function UnderMaintenancePage({ onServiceRestored }: UnderMainten
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        bgcolor: 'grey.100',
+        bgcolor: 'background.default',
         py: 4,
       }}
     >

@@ -1,11 +1,14 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider, createTheme, CssBaseline, CircularProgress, Box } from '@mui/material';
+import { ThemeProvider as MuiThemeProvider, CssBaseline, CircularProgress, Box } from '@mui/material';
+import { ThemeProvider } from './context/ThemeContext';
+import { useThemeContext } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import { FeatureProvider, useFeatures } from './context/FeatureContext';
 import { InitializationProvider, useInitialization } from './context/InitializationContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import SignupGuard from './components/SignupGuard';
+import { defaultTheme } from './theme/themes';
 
 // Pages
 import LoginPage from './pages/LoginPage';
@@ -22,98 +25,6 @@ import FeatureFlagsPage from './pages/admin/FeatureFlagsPage';
 import EmailInvitesPage from './pages/admin/EmailInvitesPage';
 import NoPermissionPage from './pages/NoPermissionPage';
 import UnderMaintenancePage from './pages/UnderMaintenancePage';
-
-// Create modern MUI theme with defaults
-const theme = createTheme({
-  palette: {
-    mode: 'light',
-    primary: {
-      main: '#1976d2',
-    },
-    secondary: {
-      main: '#9c27b0',
-    },
-    error: {
-      main: '#f44336',
-    },
-    warning: {
-      main: '#ed6c02',
-    },
-    info: {
-      main: '#0288d1',
-    },
-    success: {
-      main: '#2e7d32',
-    },
-  },
-  typography: {
-    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-    h4: {
-      fontWeight: 600,
-    },
-    h5: {
-      fontWeight: 600,
-    },
-    h6: {
-      fontWeight: 600,
-    },
-    button: {
-      textTransform: 'none',
-    },
-  },
-  shape: {
-    borderRadius: 12,
-  },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: 8,
-          fontWeight: 500,
-        },
-        contained: {
-          boxShadow: 'none',
-          '&:hover': {
-            boxShadow: 'none',
-          },
-        },
-      },
-    },
-    MuiCard: {
-      styleOverrides: {
-        root: {
-          borderRadius: 16,
-        },
-      },
-    },
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          backgroundImage: 'none',
-        },
-        elevation1: {
-          boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
-        },
-      },
-    },
-    MuiTextField: {
-      styleOverrides: {
-        root: {
-          '& .MuiOutlinedInput-root': {
-            borderRadius: 8,
-          },
-        },
-      },
-    },
-    MuiChip: {
-      styleOverrides: {
-        root: {
-          fontWeight: 500,
-        },
-      },
-    },
-  },
-});
 
 // Separate component to update document title - must be inside FeatureProvider
 function DocumentTitleUpdater() {
@@ -132,11 +43,12 @@ function DocumentTitleUpdater() {
 
 function AppContent() {
   const { isHealthy, isLoading, isInitialized } = useInitialization();
+  const { theme } = useThemeContext();
 
   // Show loading while initializing
   if (isLoading || !isInitialized) {
     return (
-      <ThemeProvider theme={theme}>
+      <MuiThemeProvider theme={defaultTheme}>
         <CssBaseline />
         <Box
           display="flex"
@@ -146,23 +58,23 @@ function AppContent() {
         >
           <CircularProgress />
         </Box>
-      </ThemeProvider>
+      </MuiThemeProvider>
     );
   }
 
   // Show maintenance page if service is not healthy
   if (!isHealthy) {
     return (
-      <ThemeProvider theme={theme}>
+      <MuiThemeProvider theme={defaultTheme}>
         <CssBaseline />
         <UnderMaintenancePage onServiceRestored={() => window.location.reload()} />
-      </ThemeProvider>
+      </MuiThemeProvider>
     );
   }
 
   // Show main app if initialized and healthy
   return (
-    <ThemeProvider theme={theme}>
+    <MuiThemeProvider theme={theme}>
       <CssBaseline />
       <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <AuthProvider>
@@ -244,15 +156,17 @@ function AppContent() {
           </FeatureProvider>
         </AuthProvider>
       </BrowserRouter>
-    </ThemeProvider>
+    </MuiThemeProvider>
   );
 }
 
 function App() {
   return (
-    <InitializationProvider>
-      <AppContent />
-    </InitializationProvider>
+    <ThemeProvider>
+      <InitializationProvider>
+        <AppContent />
+      </InitializationProvider>
+    </ThemeProvider>
   );
 }
 

@@ -15,6 +15,8 @@ import {
   DialogActions,
   Stack,
   Container,
+  Grid,
+  CardActionArea,
 } from '@mui/material';
 import {
   Save as SaveIcon,
@@ -24,9 +26,12 @@ import {
   Lock as LockIcon,
   DataUsage as DataIcon,
   Warning as WarningIcon,
+  Palette as PaletteIcon,
+  CheckCircle as CheckCircleIcon,
 } from '@mui/icons-material';
 import Header from '../components/Header';
 import { useFeatures } from '../context/FeatureContext';
+import { useThemeContext } from '../context/ThemeContext';
 import settingsService from '../services/settingsService';
 import authService from '../services/authService';
 import config from '../config';
@@ -34,10 +39,12 @@ import config from '../config';
 export default function SettingsPage() {
   const navigate = useNavigate();
   const { isFeatureEnabled, getFeatureName, getDescription } = useFeatures();
+  const { availableThemes, themeName, setTheme } = useThemeContext();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  
+  const [themeLoading, setThemeLoading] = useState(false);
+
   const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletePassword, setDeletePassword] = useState('');
@@ -103,8 +110,21 @@ export default function SettingsPage() {
     }
   };
 
+  const handleThemeChange = async (name: string) => {
+    if (name === themeName || themeLoading) return;
+    setThemeLoading(true);
+    setError('');
+    try {
+      await setTheme(name);
+    } catch (err: any) {
+      setError(err.message || 'Failed to update theme');
+    } finally {
+      setThemeLoading(false);
+    }
+  };
+
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'grey.100' }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       <Header />
       
       <Container maxWidth="xl" sx={{ py: 4 }}>
@@ -121,6 +141,66 @@ export default function SettingsPage() {
         </Box>
 
         <Stack spacing={3}>
+          {/* Appearance / Theme Card */}
+          <Card>
+            <CardContent sx={{ p: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <PaletteIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                <Typography variant="h6" fontWeight={600}>Appearance</Typography>
+              </Box>
+
+              <Grid container spacing={2}>
+                {availableThemes.map((t) => (
+                  <Grid item xs={6} sm={3} key={t.name}>
+                    <Card
+                      variant="outlined"
+                      sx={{
+                        borderColor: themeName === t.name ? 'primary.main' : 'divider',
+                        borderWidth: 2,
+                        transition: 'border-color 0.2s',
+                      }}
+                    >
+                      <CardActionArea onClick={() => handleThemeChange(t.name)} disabled={themeLoading}>
+                        <CardContent sx={{ p: 2, textAlign: 'center' }}>
+                          <Box
+                            sx={{
+                              width: 48,
+                              height: 48,
+                              borderRadius: '50%',
+                              bgcolor: t.swatch,
+                              border: t.swatchBorder ? `2px solid ${t.swatchBorder}` : 'none',
+                              mx: 'auto',
+                              mb: 1.5,
+                              position: 'relative',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          >
+                            {themeName === t.name && (
+                              <CheckCircleIcon
+                                sx={{
+                                  color: t.name === 'DARK' || t.name === 'LIGHT' ? (t.name === 'LIGHT' ? '#1976d2' : '#121212') : '#fff',
+                                  fontSize: 24,
+                                }}
+                              />
+                            )}
+                          </Box>
+                          <Typography variant="body2" fontWeight={600}>
+                            {t.label}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {t.description}
+                          </Typography>
+                        </CardContent>
+                      </CardActionArea>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            </CardContent>
+          </Card>
+
           {/* Change Password Card */}
           <Card>
             <CardContent sx={{ p: 3 }}>
