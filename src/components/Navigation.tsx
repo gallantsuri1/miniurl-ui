@@ -236,7 +236,6 @@ export default function Navigation({ children }: NavigationProps) {
           ml: { md: `${DRAWER_WIDTH}px` },
           bgcolor: 'background.paper',
           color: 'text.primary',
-          boxShadow: '0 1px 0 rgba(0,0,0,0.05)',
         }}
       >
         <Toolbar sx={{ minHeight: 64 }}>

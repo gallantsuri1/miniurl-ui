@@ -59,7 +59,7 @@ export default function NoPermissionPage() {
         }}
       >
         <ErrorIcon sx={{ fontSize: 80, color: 'warning.main', mb: 3 }} />
-        <Typography variant="h4" fontWeight={700} gutterBottom>
+        <Typography variant="h4" gutterBottom>
           Access Denied
         </Typography>
         <Typography variant="h6" color="text.secondary" sx={{ mb: 4 }}>

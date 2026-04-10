@@ -29,7 +29,7 @@ export default function ProfilePage() {
   const { getFeatureName, getDescription } = useFeatures();
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [profileData, setProfileData] = useState<{ createdAt: string; lastLogin: string | null } | null>(null);
+  const [profileData, setProfileData] = useState<{ id?: number; username?: string; firstName?: string; lastName?: string; email?: string; createdAt: string; lastLogin: string | null } | null>(null);
 
   const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '' });
   const [originalValues, setOriginalValues] = useState({ firstName: '', lastName: '', email: '' });
@@ -43,7 +43,15 @@ export default function ProfilePage() {
   const loadProfile = async () => {
     try {
       const profile = await profileService.getProfile();
-      setProfileData({ createdAt: profile.createdAt, lastLogin: profile.lastLogin });
+      setProfileData({
+        id: profile.id,
+        username: profile.username || '',
+        firstName: profile.firstName || '',
+        lastName: profile.lastName || '',
+        email: profile.email || '',
+        createdAt: profile.createdAt,
+        lastLogin: profile.lastLogin,
+      });
       const data = { firstName: profile.firstName || '', lastName: profile.lastName || '', email: profile.email || '' };
       setFormData(data);
       setOriginalValues(data);
@@ -144,9 +152,9 @@ export default function ProfilePage() {
   };
 
   const infoCards = [
-    { label: 'Full Name', value: user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : 'Not set' },
-    { label: 'Username', value: user?.username || 'N/A' },
-    { label: 'Email', value: user?.email || 'N/A' },
+    { label: 'Full Name', value: profileData?.firstName && profileData?.lastName ? `${profileData.firstName} ${profileData.lastName}` : (user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : 'Not set') },
+    { label: 'Username', value: profileData?.username || user?.username || 'N/A' },
+    { label: 'Email', value: profileData?.email || user?.email || 'N/A' },
     { label: 'Role', value: user?.role?.name || 'USER', chip: true },
     { label: 'Member Since', value: formatDateOnly(profileData?.createdAt ?? null) },
     { label: 'Last Login', value: formatDate(profileData?.lastLogin ?? null) },
@@ -159,7 +167,7 @@ export default function ProfilePage() {
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, flexWrap: 'wrap', gap: 2 }}>
           <Box>
-            <Typography variant="h4" fontWeight={700} gutterBottom>
+            <Typography variant="h4" gutterBottom>
               {getFeatureName('PROFILE_PAGE')}
             </Typography>
             <Typography color="text.secondary">{getDescription('PROFILE_PAGE')}</Typography>
@@ -193,7 +201,7 @@ export default function ProfilePage() {
         {/* Edit Profile Card */}
         <Card>
           <CardContent sx={{ p: 3 }}>
-            <Typography variant="h6" fontWeight={600} mb={2}>
+            <Typography variant="h6" mb={2}>
               Edit Profile Information
             </Typography>
             
@@ -218,7 +226,7 @@ export default function ProfilePage() {
                   </Tooltip>
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label="Username" value={user?.username || ''} disabled helperText="Username cannot be changed" />
+                  <TextField fullWidth label="Username" value={profileData?.username || user?.username || ''} disabled helperText="Username cannot be changed" />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField fullWidth label="Role" value={user?.role?.name || 'USER'} disabled helperText="Role is managed by administrators" />
@@ -232,7 +240,7 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
 
-        <Snackbar open={!!success} autoHideDuration={3000} onClose={() => setSuccess('')} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
+        <Snackbar open={!!success} autoHideDuration={3000} onClose={() => setSuccess('')}>
           <Alert severity="success">{success}</Alert>
         </Snackbar>
       </Container>

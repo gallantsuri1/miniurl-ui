@@ -15,11 +15,21 @@ const componentOverrides = {
       root: {
         borderRadius: 8,
         fontWeight: 500,
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)',
+        '&:hover': {
+          boxShadow: '0 4px 8px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.1)',
+        },
+        '&:active': {
+          boxShadow: '0 1px 2px rgba(0,0,0,0.1), 0 0.5px 1px rgba(0,0,0,0.06)',
+        },
       },
       contained: {
-        boxShadow: 'none',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)',
         '&:hover': {
-          boxShadow: 'none',
+          boxShadow: '0 6px 12px rgba(0,0,0,0.15), 0 3px 6px rgba(0,0,0,0.1)',
+        },
+        '&:active': {
+          boxShadow: '0 1px 2px rgba(0,0,0,0.1), 0 0.5px 1px rgba(0,0,0,0.06)',
         },
       },
     },
@@ -28,16 +38,37 @@ const componentOverrides = {
     styleOverrides: {
       root: {
         borderRadius: 16,
+        boxShadow: '0 4px 8px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.06)',
+        transition: 'box-shadow 0.3s ease',
+        '&:hover': {
+          boxShadow: '0 8px 16px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.08)',
+        },
       },
     },
   },
   MuiPaper: {
     styleOverrides: {
       root: {
-        backgroundImage: 'none',
+        backgroundImage: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%)',
+        boxShadow: '0 4px 8px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.06)',
+        transition: 'box-shadow 0.3s ease',
+        '&:hover': {
+          boxShadow: '0 8px 16px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.08)',
+        },
       },
       elevation1: {
-        boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
+        boxShadow: '0 2px 6px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08)',
+      },
+      elevation3: {
+        boxShadow: '0 6px 12px rgba(0,0,0,0.12), 0 3px 6px rgba(0,0,0,0.08)',
+      },
+    },
+  },
+  MuiAppBar: {
+    styleOverrides: {
+      root: {
+        boxShadow: '0 4px 8px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.06)',
+        backgroundImage: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%)',
       },
     },
   },
@@ -46,6 +77,14 @@ const componentOverrides = {
       root: {
         '& .MuiOutlinedInput-root': {
           borderRadius: 8,
+          boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+          transition: 'box-shadow 0.2s ease, border-color 0.2s ease',
+          '&:hover': {
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08)',
+          },
+          '&.Mui-focused': {
+            boxShadow: '0 4px 8px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.08)',
+          },
         },
       },
     },
@@ -54,6 +93,33 @@ const componentOverrides = {
     styleOverrides: {
       root: {
         fontWeight: 500,
+        boxShadow: '0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06)',
+      },
+    },
+  },
+  MuiTableCell: {
+    styleOverrides: {
+      head: {
+        fontWeight: 600,
+      },
+    },
+  },
+  MuiSnackbar: {
+    defaultProps: {
+      anchorOrigin: { vertical: 'bottom' as const, horizontal: 'right' as const },
+    },
+  },
+  MuiTooltip: {
+    styleOverrides: {
+      tooltip: {
+        fontWeight: 500,
+      },
+    },
+  },
+  MuiDialogContent: {
+    styleOverrides: {
+      root: {
+        minWidth: 400,
       },
     },
   },
@@ -61,7 +127,7 @@ const componentOverrides = {
 
 const typography = {
   fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-  h4: { fontWeight: 600 },
+  h4: { fontWeight: 700 },
   h5: { fontWeight: 600 },
   h6: { fontWeight: 600 },
   button: { textTransform: 'none' as const },
@@ -108,9 +174,19 @@ export const darkTheme = createTheme({
     ...componentOverrides,
     MuiPaper: {
       styleOverrides: {
-        root: { backgroundImage: 'none' },
+        root: {
+          backgroundImage: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 100%)',
+          boxShadow: '0 2px 6px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.2)',
+          transition: 'box-shadow 0.3s ease',
+          '&:hover': {
+            boxShadow: '0 4px 12px rgba(0,0,0,0.4), 0 2px 6px rgba(0,0,0,0.3)',
+          },
+        },
         elevation1: {
-          boxShadow: '0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.5)',
+          boxShadow: '0 2px 6px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3)',
+        },
+        elevation3: {
+          boxShadow: '0 6px 12px rgba(0,0,0,0.5), 0 3px 6px rgba(0,0,0,0.4)',
         },
       },
     },

@@ -265,7 +265,7 @@ export default function DashboardPage() {
       <Container maxWidth="xl" sx={{ py: 3 }}>
         {/* Page Title */}
         <Box sx={{ mb: 4 }}>
-          <Typography variant="h4" fontWeight={700} gutterBottom>
+          <Typography variant="h4" gutterBottom>
             {getFeatureName('DASHBOARD')}
           </Typography>
           <Typography color="text.secondary">{getDescription('DASHBOARD')}</Typography>
@@ -275,7 +275,7 @@ export default function DashboardPage() {
         <Card sx={{ mb: 4 }}>
           <CardContent sx={{ p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <Typography variant="h6" fontWeight={600}>
+              <Typography variant="h6">
                 Create Short URL
               </Typography>
               <Typography
@@ -388,7 +388,7 @@ export default function DashboardPage() {
         <Card>
           <CardContent sx={{ p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, gap: 1 }}>
-              <Typography variant="h6" fontWeight={600}>
+              <Typography variant="h6">
                 Your URLs
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -463,11 +463,11 @@ export default function DashboardPage() {
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell sx={{ fontWeight: 600, width: '150px' }}>Short URL</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Original URL</TableCell>
-                      <TableCell sx={{ fontWeight: 600, width: '100px' }}>Clicks</TableCell>
-                      <TableCell sx={{ fontWeight: 600, width: '120px' }}>Created</TableCell>
-                      <TableCell sx={{ fontWeight: 600, width: '100px' }}>Actions</TableCell>
+                      <TableCell sx={{ width: '150px' }}>Short URL</TableCell>
+                      <TableCell>Original URL</TableCell>
+                      <TableCell sx={{ width: '100px' }}>Clicks</TableCell>
+                      <TableCell sx={{ width: '120px' }}>Created</TableCell>
+                      <TableCell sx={{ width: '100px' }}>Actions</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>

@@ -289,7 +289,7 @@ export default function FeatureFlagsPage() {
           <Box>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
               <FlagIcon sx={{ mr: 1, color: 'text.secondary' }} />
-              <Typography variant="h4" fontWeight={700}>
+              <Typography variant="h4">
                 {getFeatureName('FEATURE_MANAGEMENT')}
               </Typography>
             </Box>
@@ -332,11 +332,11 @@ export default function FeatureFlagsPage() {
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <TableCell sx={{ fontWeight: 600, minWidth: 200 }}>Feature Name</TableCell>
-                        <TableCell sx={{ fontWeight: 600, minWidth: 250 }}>Description</TableCell>
-                        <TableCell sx={{ fontWeight: 600, minWidth: 120, textAlign: 'center' }}>Admin</TableCell>
-                        <TableCell sx={{ fontWeight: 600, minWidth: 120, textAlign: 'center' }}>User</TableCell>
-                        <TableCell sx={{ fontWeight: 600, minWidth: 100, textAlign: 'center' }}>Actions</TableCell>
+                        <TableCell sx={{ minWidth: 200 }}>Feature Name</TableCell>
+                        <TableCell sx={{ minWidth: 250 }}>Description</TableCell>
+                        <TableCell sx={{ minWidth: 120, textAlign: 'center' }}>Admin</TableCell>
+                        <TableCell sx={{ minWidth: 120, textAlign: 'center' }}>User</TableCell>
+                        <TableCell sx={{ minWidth: 100, textAlign: 'center' }}>Actions</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -455,11 +455,11 @@ export default function FeatureFlagsPage() {
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <TableCell sx={{ fontWeight: 600, minWidth: 200 }}>Feature Name</TableCell>
-                        <TableCell sx={{ fontWeight: 600, minWidth: 250 }}>Description</TableCell>
-                        <TableCell sx={{ fontWeight: 600, minWidth: 150, textAlign: 'center' }}>Status</TableCell>
-                        <TableCell sx={{ fontWeight: 600, minWidth: 120, textAlign: 'center' }}>Toggle</TableCell>
-                        <TableCell sx={{ fontWeight: 600, minWidth: 100, textAlign: 'center' }}>Actions</TableCell>
+                        <TableCell sx={{ minWidth: 200 }}>Feature Name</TableCell>
+                        <TableCell sx={{ minWidth: 250 }}>Description</TableCell>
+                        <TableCell sx={{ minWidth: 150, textAlign: 'center' }}>Status</TableCell>
+                        <TableCell sx={{ minWidth: 120, textAlign: 'center' }}>Toggle</TableCell>
+                        <TableCell sx={{ minWidth: 100, textAlign: 'center' }}>Actions</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -528,7 +528,7 @@ export default function FeatureFlagsPage() {
           <Grid item xs={12}>
             <Card>
               <CardContent>
-                <Typography variant="h6" fontWeight={600} gutterBottom>
+                <Typography variant="h6" gutterBottom>
                   📊 Feature Summary
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 4, mt: 2, flexWrap: 'wrap' }}>

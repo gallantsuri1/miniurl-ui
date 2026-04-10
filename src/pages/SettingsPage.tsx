@@ -122,7 +122,7 @@ export default function SettingsPage() {
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, flexWrap: 'wrap', gap: 2 }}>
           <Box>
-            <Typography variant="h4" fontWeight={700} gutterBottom>
+            <Typography variant="h4" gutterBottom>
               {getFeatureName('SETTINGS_PAGE')}
             </Typography>
             <Typography color="text.secondary">{getDescription('SETTINGS_PAGE')}</Typography>
@@ -140,7 +140,7 @@ export default function SettingsPage() {
             <CardContent sx={{ p: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                 <PaletteIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                <Typography variant="h6" fontWeight={600}>Appearance</Typography>
+                <Typography variant="h6">Appearance</Typography>
               </Box>
 
               <Grid container spacing={2}>
@@ -151,7 +151,7 @@ export default function SettingsPage() {
                       sx={{
                         borderColor: themeName === t.name ? 'primary.main' : 'divider',
                         borderWidth: 2,
-                        transition: 'border-color 0.2s',
+                        transition: 'all 0.3s ease',
                       }}
                     >
                       <CardActionArea onClick={() => handleThemeChange(t.name)} disabled={themeLoading}>
@@ -201,7 +201,7 @@ export default function SettingsPage() {
               <CardContent sx={{ p: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <DataIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                  <Typography variant="h6" fontWeight={600}>Export My Data</Typography>
+                  <Typography variant="h6">Export My Data</Typography>
                 </Box>
 
                 <Typography color="text.secondary" sx={{ mb: 2 }}>
@@ -219,7 +219,7 @@ export default function SettingsPage() {
             <CardContent sx={{ p: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <WarningIcon sx={{ mr: 1, color: 'error.main' }} />
-                <Typography variant="h6" fontWeight={600} color="error.main">Danger Zone</Typography>
+                <Typography variant="h6" color="error.main">Danger Zone</Typography>
               </Box>
 
               <Typography color="text.secondary" sx={{ mb: 2 }}>
@@ -263,7 +263,7 @@ export default function SettingsPage() {
           </DialogActions>
         </Dialog>
 
-        <Snackbar open={!!success} autoHideDuration={3000} onClose={() => setSuccess('')} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
+        <Snackbar open={!!success} autoHideDuration={3000} onClose={() => setSuccess('')}>
           <Alert severity="success">{success}</Alert>
         </Snackbar>
       </Container>

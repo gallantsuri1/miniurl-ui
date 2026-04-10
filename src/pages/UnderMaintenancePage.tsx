@@ -79,7 +79,7 @@ export default function UnderMaintenancePage({ onServiceRestored }: UnderMainten
             />
 
             {/* Title */}
-            <Typography variant="h4" fontWeight={700} gutterBottom>
+            <Typography variant="h4" gutterBottom>
               Under Maintenance
             </Typography>
 

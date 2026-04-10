@@ -220,7 +220,7 @@ export default function EmailInvitesPage() {
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, flexWrap: 'wrap', gap: 2 }}>
           <Box>
-            <Typography variant="h4" fontWeight={700} gutterBottom>
+            <Typography variant="h4" gutterBottom>
               {getFeatureName('EMAIL_INVITE')}
             </Typography>
             <Typography color="text.secondary">{getDescription('EMAIL_INVITE')}</Typography>
@@ -349,22 +349,22 @@ export default function EmailInvitesPage() {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell sx={{ fontWeight: 600 }}>Email</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }}>Invited By</TableCell>
-                    <TableCell 
-                      sx={{ fontWeight: 600, cursor: 'pointer' }}
+                    <TableCell>Email</TableCell>
+                    <TableCell>Invited By</TableCell>
+                    <TableCell
+                      sx={{ cursor: 'pointer' }}
                       onClick={() => handleSort('createdAt')}
                     >
                       Sent Date {renderSortIcon('createdAt')}
                     </TableCell>
-                    <TableCell 
-                      sx={{ fontWeight: 600, cursor: 'pointer' }}
+                    <TableCell
+                      sx={{ cursor: 'pointer' }}
                       onClick={() => handleSort('expiresAt')}
                     >
                       Expires {renderSortIcon('expiresAt')}
                     </TableCell>
-                    <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }}>Actions</TableCell>
+                    <TableCell>Status</TableCell>
+                    <TableCell>Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>

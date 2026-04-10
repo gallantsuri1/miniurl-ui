@@ -222,7 +222,7 @@ export default function UserManagementPage() {
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, flexWrap: 'wrap', gap: 2 }}>
           <Box>
-            <Typography variant="h4" fontWeight={700} gutterBottom>
+            <Typography variant="h4" gutterBottom>
               {getFeatureName('USER_MANAGEMENT')}
             </Typography>
             <Typography color="text.secondary">{getDescription('USER_MANAGEMENT')}</Typography>
@@ -315,20 +315,20 @@ export default function UserManagementPage() {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell sx={{ fontWeight: 600 }}>ID</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }}>Name</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }}>Email</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }}>Username</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }}>Role</TableCell>
-                    <TableCell 
-                      sx={{ fontWeight: 600, cursor: 'pointer' }}
+                    <TableCell>ID</TableCell>
+                    <TableCell>Name</TableCell>
+                    <TableCell>Email</TableCell>
+                    <TableCell>Username</TableCell>
+                    <TableCell>Role</TableCell>
+                    <TableCell
+                      sx={{ cursor: 'pointer' }}
                       onClick={() => handleSort('createdAt')}
                     >
                       Created {renderSortIcon('createdAt')}
                     </TableCell>
-                    <TableCell sx={{ fontWeight: 600 }}>Last Login</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }}>Actions</TableCell>
+                    <TableCell>Last Login</TableCell>
+                    <TableCell>Status</TableCell>
+                    <TableCell>Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>

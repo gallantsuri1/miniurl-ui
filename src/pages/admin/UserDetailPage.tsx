@@ -73,7 +73,7 @@ export default function UserDetailPage() {
       DELETED: { color: 'error', label: 'Deleted', icon: <DeletedIcon sx={{ fontSize: 16 }} /> },
     };
     const { color, label, icon } = config[status];
-    return <Chip label={label} color={color} icon={icon} sx={{ fontWeight: 600 }} />;
+    return <Chip label={label} color={color} icon={icon} />;
   };
 
   const formatDate = (dateStr: string | null) => {
@@ -134,7 +134,7 @@ export default function UserDetailPage() {
         {/* Header */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, flexWrap: 'wrap', gap: 2 }}>
           <Box>
-            <Typography variant="h4" fontWeight={700} gutterBottom>
+            <Typography variant="h4" gutterBottom>
               User Details
             </Typography>
             <Typography color="text.secondary">
@@ -150,7 +150,7 @@ export default function UserDetailPage() {
         <Grid container spacing={3}>
           {/* Personal Information */}
           <Grid item xs={12} md={6}>
-            <Card>
+            <Card sx={{ height: '100%' }}>
               <CardHeader
                 title={
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -159,7 +159,7 @@ export default function UserDetailPage() {
                   </Box>
                 }
               />
-              <CardContent>
+              <CardContent sx={{ flexGrow: 1 }}>
                 <Stack spacing={3}>
                   <Box>
                     <Typography variant="caption" color="text.secondary" fontWeight={500}>
@@ -198,7 +198,7 @@ export default function UserDetailPage() {
 
           {/* Account Information */}
           <Grid item xs={12} md={6}>
-            <Card>
+            <Card sx={{ height: '100%' }}>
               <CardHeader
                 title={
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -207,7 +207,7 @@ export default function UserDetailPage() {
                   </Box>
                 }
               />
-              <CardContent>
+              <CardContent sx={{ flexGrow: 1 }}>
                 <Stack spacing={3}>
                   <Box>
                     <Typography variant="caption" color="text.secondary" fontWeight={500}>
