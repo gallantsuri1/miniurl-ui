@@ -31,10 +31,20 @@ apiClient.interceptors.request.use(
 );
 
 /**
- * Response interceptor - handles common error cases
+ * Response interceptor - handles common error cases and token refresh
  */
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // Check for token refresh headers from backend
+    const newToken = response.headers['x-authorization'];
+    const tokenRenewed = response.headers['x-token-renewed'];
+
+    if (newToken && tokenRenewed === 'true') {
+      localStorage.setItem('token', newToken);
+    }
+
+    return response;
+  },
   (error: AxiosError<ApiResponse>) => {
     // Handle network errors or server unavailable (503, 502, 500)
     if (!error.response || [502, 503, 504].includes(error.response?.status || 0)) {

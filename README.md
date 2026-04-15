@@ -336,6 +336,12 @@ src/
 - Useful for scenarios where users accidentally close browser tabs and revisit the app
 - Redirect respects feature flags (redirects to no-permission if user lacks dashboard access)
 
+### 2b. Automatic Token Refresh
+- The API client automatically updates the localStorage token when the backend sends refresh headers
+- When response headers contain both `X-Authorization` (new token) and `X-Token-Renewed: true`, the token is automatically updated
+- This enables seamless token rotation without requiring user re-authentication
+- Works transparently across all API calls in the application
+
 ### 3. Feature-Based Access Control
 - All pages (except login) are protected by feature flags
 - Users are redirected based on their feature permissions
