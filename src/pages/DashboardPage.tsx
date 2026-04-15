@@ -459,15 +459,15 @@ export default function DashboardPage() {
 
             {/* URLs Table */}
             {(!isInitialLoad || urls.length > 0) && urls.length > 0 && (
-              <TableContainer>
-                <Table>
+              <TableContainer sx={{ overflowX: 'hidden' }}>
+                <Table sx={{ tableLayout: 'fixed' }}>
                   <TableHead>
                     <TableRow>
-                      <TableCell sx={{ width: '150px' }}>Short URL</TableCell>
-                      <TableCell sx={{ width: 'auto' }}>Original URL</TableCell>
-                      <TableCell sx={{ width: '100px' }}>Clicks</TableCell>
+                      <TableCell sx={{ width: '180px' }}>Short URL</TableCell>
+                      <TableCell>Original URL</TableCell>
+                      <TableCell sx={{ width: '90px', textAlign: 'center' }}>Clicks</TableCell>
                       <TableCell sx={{ width: '120px' }}>Created</TableCell>
-                      <TableCell sx={{ width: '100px' }}>Actions</TableCell>
+                      <TableCell sx={{ width: '110px' }}>Actions</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -506,7 +506,7 @@ export default function DashboardPage() {
                             </Tooltip>
                           </Box>
                         </TableCell>
-                        <TableCell sx={{ minWidth: 0 }}>
+                        <TableCell sx={{ overflow: 'hidden' }}>
                           <Tooltip title={url.originalUrl} arrow placement="top">
                             <Typography
                               variant="body2"
@@ -514,14 +514,14 @@ export default function DashboardPage() {
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
                                 whiteSpace: 'nowrap',
-                                minWidth: 0,
+                                display: 'block',
                               }}
                             >
                               {url.originalUrl}
                             </Typography>
                           </Tooltip>
                         </TableCell>
-                        <TableCell>
+                        <TableCell sx={{ textAlign: 'center' }}>
                           <Chip label={url.accessCount} size="small" />
                         </TableCell>
                         <TableCell>
