@@ -46,9 +46,15 @@ jobs:
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
+        with:
+          platforms: 'arm64,amd64'
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
+        with:
+          driver-opts: |
+            image=moby/buildkit:latest
+            network=host
 
       - name: Login to Docker Hub
         uses: docker/login-action@v4
@@ -67,6 +73,10 @@ jobs:
             ${{ secrets.DOCKER_USER }}/miniurl-ui:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          build-args: |
+            VITE_APP_NAME=__VITE_APP_NAME__
+            VITE_APP_DESCRIPTION=__VITE_APP_DESCRIPTION__
+            VITE_API_URL=__VITE_API_URL__
 
       - name: Create notification issue
         if: success()

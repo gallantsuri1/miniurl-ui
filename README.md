@@ -474,6 +474,11 @@ docker buildx build --platform linux/amd64,linux/arm64 \
 > docker build -t gallantsuri1/miniurl-ui:v1.0.0 .
 > ```
 
+> **ARM64 Build Issues:** If you encounter `qemu: uncaught target signal 4 (Illegal instruction)` errors during multi-platform builds, this is a known QEMU emulation issue with Node.js Alpine images. Solutions:
+> - Ensure you're using the latest Docker Desktop and QEMU binaries
+> - Run `docker buildx ls` to verify buildx is properly configured
+> - The Dockerfile has been optimized to minimize this issue
+
 #### 3. Verify the Pushed Image
 ```bash
 # Check the manifest to see supported platforms

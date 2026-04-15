@@ -8,8 +8,9 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production && npm ci
+# Install all dependencies (including devDependencies needed for build)
+# Single npm ci call to avoid QEMU ARM64 emulation issues
+RUN npm ci
 
 # Copy source code
 COPY . .
