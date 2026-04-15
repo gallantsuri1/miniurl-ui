@@ -507,17 +507,19 @@ export default function DashboardPage() {
                           </Box>
                         </TableCell>
                         <TableCell>
-                          <Typography
-                            variant="body2"
-                            sx={{
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
-                            }}
-                            title={url.originalUrl}
-                          >
-                            {url.originalUrl}
-                          </Typography>
+                          <Tooltip title={url.originalUrl} arrow placement="top">
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                                maxWidth: '300px',
+                              }}
+                            >
+                              {url.originalUrl}
+                            </Typography>
+                          </Tooltip>
                         </TableCell>
                         <TableCell>
                           <Chip label={url.accessCount} size="small" />
