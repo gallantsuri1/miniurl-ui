@@ -464,7 +464,7 @@ export default function DashboardPage() {
                   <TableHead>
                     <TableRow>
                       <TableCell sx={{ width: '150px' }}>Short URL</TableCell>
-                      <TableCell>Original URL</TableCell>
+                      <TableCell sx={{ width: 'auto' }}>Original URL</TableCell>
                       <TableCell sx={{ width: '100px' }}>Clicks</TableCell>
                       <TableCell sx={{ width: '120px' }}>Created</TableCell>
                       <TableCell sx={{ width: '100px' }}>Actions</TableCell>
@@ -506,7 +506,7 @@ export default function DashboardPage() {
                             </Tooltip>
                           </Box>
                         </TableCell>
-                        <TableCell>
+                        <TableCell sx={{ minWidth: 0 }}>
                           <Tooltip title={url.originalUrl} arrow placement="top">
                             <Typography
                               variant="body2"
@@ -514,7 +514,7 @@ export default function DashboardPage() {
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
                                 whiteSpace: 'nowrap',
-                                maxWidth: '300px',
+                                minWidth: 0,
                               }}
                             >
                               {url.originalUrl}
